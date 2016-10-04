@@ -1,0 +1,47 @@
+      *
+      *(c) Copyright Continuum Corporation Ltd.  1986....1995.
+      *    All rights reserved.  Continuum Confidential.
+      *
+       01  BSSC-PARAMS.
+         03  BSSC-FUNCTION             PIC X(0005).
+         03  BSSC-STATUZ               PIC X(0004).
+         03  BSSC-LEVEL-ID.
+           05  BSSC-GEN-DATE           PIC 9(0008).
+           05  BSSC-GEN-TIME           PIC 9(0006).
+           05  BSSC-VN                 PIC X(0002).
+         03  BSSCIO                    PIC X(0010).
+         03  BSSC-RRN                  PIC 9(09) COMP-4.
+         03  BSSC-FORMAT               PIC X(0010).
+      *
+         03  BSSC-DATA-AREA.
+           05  BSSC-DATA-KEY                   PIC X(0064).
+           05  BSSCREC-KEY-DATA REDEFINES BSSC-DATA-KEY.
+            07  BSSC-SCHEDULE-NAME             PIC X(0010).
+            07  BSSC-SCHEDULE-NUMBER           PIC S9(08) COMP-3.
+            07  FILLER                         PIC X(0049).
+      *
+           05  BSSC-NON-KEY                    PIC X(0179).
+           05  BSSCREC-NON-KEY-DATA REDEFINES BSSC-NON-KEY.
+            07  FILLER                         PIC X(0010).
+            07  FILLER                         PIC X(0005).
+            07  BSSC-SCHEDULE-STATUS           PIC X(0002).
+            07  BSSC-CURR-NOF-THREADS          PIC S9(03) COMP-3.
+            07  BSSC-REQD-NOF-THREADS          PIC S9(03) COMP-3.
+            07  BSSC-USER-NAME                 PIC X(0010).
+            07  BSSC-DATIME-INIT               PIC X(0026).
+            07  BSSC-DATIME-STARTED            PIC X(0026).
+            07  BSSC-DATIME-ENDED              PIC X(0026).
+            07  BSSC-EFFECTIVE-DATE            PIC S9(08).
+            07  BSSC-ACCT-YEAR                 PIC S9(04) COMP-3.
+            07  BSSC-ACCT-MONTH                PIC S9(02) COMP-3.
+            07  BSSC-LANGUAGE                  PIC X(0001).
+            07  BSSC-INIT-BRANCH               PIC X(0002).
+            07  BSSC-PROCESSES-ABORTED         PIC S9(03) COMP-3.
+            07  BSSC-PROCESSES-FAILED          PIC S9(03) COMP-3.
+            07  BSSC-PROCESSES-COMPLETED       PIC S9(03) COMP-3.
+            07  BSSC-PROCESSES-CANCELLED       PIC S9(03) COMP-3.
+            07  BSSC-USER-PROFILE              PIC X(0010).
+            07  BSSC-JOB-NAME                  PIC X(0010).
+            07  BSSC-DATIME                    PIC X(0026).
+      *
+

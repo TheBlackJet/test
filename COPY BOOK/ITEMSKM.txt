@@ -1,0 +1,43 @@
+      *
+      *(c) Copyright Continuum Corporation Ltd.  1986....1995.
+      *    All rights reserved.  Continuum Confidential.
+      *
+       01  ITEM-PARAMS.
+         03  ITEM-FUNCTION             PIC X(0005).
+         03  ITEM-STATUZ               PIC X(0004).
+         03  ITEM-LEVEL-ID.
+           05  ITEM-GEN-DATE           PIC 9(0008).
+           05  ITEM-GEN-TIME           PIC 9(0006).
+           05  ITEM-VN                 PIC X(0002).
+         03  ITEMIO                    PIC X(0010).
+         03  ITEM-RRN                  PIC 9(09) COMP-4.
+         03  ITEM-FORMAT               PIC X(0010).
+      *
+         03  ITEM-DATA-AREA.
+           05  ITEM-DATA-KEY                   PIC X(0064).
+           05  ITEMREC-KEY-DATA REDEFINES ITEM-DATA-KEY.
+            07  ITEM-ITEMPFX                   PIC X(0002).
+            07  ITEM-ITEMCOY                   PIC X(0001).
+            07  ITEM-ITEMTABL                  PIC X(0005).
+            07  ITEM-ITEMITEM                  PIC X(0008).
+            07  ITEM-ITEMSEQ                   PIC X(0002).
+            07  FILLER                         PIC X(0046).
+      *
+           05  ITEM-NON-KEY                    PIC X(0595).
+           05  ITEMREC-NON-KEY-DATA REDEFINES ITEM-NON-KEY.
+            07  FILLER                         PIC X(0002).
+            07  FILLER                         PIC X(0001).
+            07  FILLER                         PIC X(0005).
+            07  FILLER                         PIC X(0008).
+            07  FILLER                         PIC X(0002).
+            07  ITEM-TRANID                    PIC X(0014).
+            07  ITEM-TABLEPROG                 PIC X(0006).
+            07  ITEM-VALIDFLAG                 PIC X(0001).
+            07  ITEM-ITMFRM                    PIC S9(08) COMP-3.
+            07  ITEM-ITMTO                     PIC S9(08) COMP-3.
+            07  ITEM-GENAREA                   PIC X(0500).
+            07  ITEM-USER-PROFILE              PIC X(0010).
+            07  ITEM-JOB-NAME                  PIC X(0010).
+            07  ITEM-DATIME                    PIC X(0026).
+      *
+

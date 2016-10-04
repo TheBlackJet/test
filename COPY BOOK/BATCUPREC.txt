@@ -1,0 +1,33 @@
+      ***********************************************************************
+      *                                                                     *
+      * ......... New Version of the Amendment History.                     *
+      *                                                                     *
+      ***********************************************************************
+      *           AMENDMENT  HISTORY                                        *
+      ***********************************************************************
+      * DATE.... VSN/MOD  WORK UNIT    BY....                               *
+      *                                                                     *
+      * 31/01/97  01/01   D97CEN       Ulrika Nyberg                        *
+      *           Year 2000 field expansion.                                *
+      *                                                                     *
+      **DD/MM/YY*************************************************************
+       01  BCUP-BATCUP-REC.
+           03  BCUP-FUNCTION           PIC X(05).
+           03  BCUP-BATCHKEY.
+               05  BCUP-CONTKEY.
+                 07  BCUP-BATCPFX      PIC X(02).
+                 07  BCUP-BATCCOY      PIC X(01).
+                 07  BCUP-BATCBRN      PIC X(02).
+      ****       07  BCUP-BATCACTYR    PIC 9(02) COMP-3.                <D97CEN>
+                 07  BCUP-BATCACTYR    PIC 9(04) COMP-3.                <D97CEN>
+                 07  BCUP-BATCACTMN    PIC 9(02) COMP-3.
+                 07  BCUP-BATCTRCDE    PIC X(04).
+               05  BCUP-BATCBATCH      PIC X(05).
+           03  BCUP-TRANCNT            PIC S9(09).
+           03  BCUP-ETREQCNT           PIC S9(09).
+           03  BCUP-SUB                PIC 9(02).
+           03  BCUP-BCNT               PIC S9(09).
+           03  BCUP-BVAL               PIC S9(15)V9(02).
+           03  BCUP-ASCNT              PIC S9(09).
+           03  BCUP-STATUZ             PIC X(04).
+

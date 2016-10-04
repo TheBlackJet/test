@@ -1,0 +1,19 @@
+       01  SHHHH-DATA-AREA.
+           02  SHHHH-DATA-FIELDS.
+             03  SHHHH-COMPANY                  PIC X(00001)    .
+           02  SHHHH-ERROR-INDICATORS.
+             03  SHHHH-COMPANY-ERR      PIC X(4).
+           02  SHHHH-OUTPUT-INDICATORS.
+             03  SHHHH-COMPANY-OUT      PIC X OCCURS 12.
+       01  SHHHH-SUBFILE-AREA.
+           02  SHHHH-SUBFILE-FIELDS.
+             03  SHHHH-MANCODER                 PIC X(00007)    .
+             03  SHHHH-SELECT                   PIC X(00001)    .
+           02  SHHHH-ERROR-SUBFILE.
+             03  SHHHH-MANCODER-ERR     PIC X(4).
+             03  SHHHH-SELECT-ERR       PIC X(4).
+           02  SHHHH-OUTPUT-SUBFILE.
+             03  SHHHH-MANCODER-OUT     PIC X OCCURS 12.
+             03  SHHHH-SELECT-OUT       PIC X OCCURS 12.
+           02  SHHHH-SUBFILE-PAGE               PIC S9(03)  COMP-3  .
+

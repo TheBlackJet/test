@@ -1,0 +1,79 @@
+      *
+      *(c) Copyright Continuum Corporation Ltd.  1986....1995.
+      *    All rights reserved.  Continuum Confidential.
+      *
+       01  CHDRENQ-PARAMS.
+         03  CHDRENQ-FUNCTION             PIC X(0005).
+         03  CHDRENQ-STATUZ               PIC X(0004).
+         03  CHDRENQ-LEVEL-ID.
+           05  CHDRENQ-GEN-DATE           PIC 9(0008).
+           05  CHDRENQ-GEN-TIME           PIC 9(0006).
+           05  CHDRENQ-VN                 PIC X(0002).
+         03  CHDRENQIO                    PIC X(0010).
+         03  CHDRENQ-RRN                  PIC 9(09) COMP-4.
+         03  CHDRENQ-FORMAT               PIC X(0010).
+      *
+         03  CHDRENQ-DATA-AREA.
+           05  CHDRENQ-DATA-KEY                   PIC X(0064).
+           05  CHDRENQREC-KEY-DATA REDEFINES CHDRENQ-DATA-KEY.
+            07  CHDRENQ-CHDRCOY                PIC X(0001).
+            07  CHDRENQ-CHDRNUM                PIC X(0008).
+            07  FILLER                         PIC X(0055).
+      *
+           05  CHDRENQ-NON-KEY                 PIC X(0266).
+           05  CHDRENQREC-NON-KEY-DATA REDEFINES CHDRENQ-NON-KEY.
+            07  FILLER                         PIC X(0001).
+            07  FILLER                         PIC X(0008).
+            07  CHDRENQ-VALIDFLAG              PIC X(0001).
+            07  CHDRENQ-SERVUNIT               PIC X(0002).
+            07  CHDRENQ-CNTTYPE                PIC X(0003).
+            07  CHDRENQ-TRANNO                 PIC S9(05) COMP-3.
+            07  CHDRENQ-TRANID                 PIC X(0014).
+            07  CHDRENQ-STATCODE               PIC X(0002).
+            07  CHDRENQ-OCCDATE                PIC S9(08) COMP-3.
+            07  CHDRENQ-COWNCOY                PIC X(0001).
+            07  CHDRENQ-COWNNUM                PIC X(0008).
+            07  CHDRENQ-JOWNNUM                PIC X(0008).
+            07  CHDRENQ-PAYRCOY                PIC X(0001).
+            07  CHDRENQ-PAYRNUM                PIC X(0008).
+            07  CHDRENQ-DESPCOY                PIC X(0001).
+            07  CHDRENQ-DESPNUM                PIC X(0008).
+            07  CHDRENQ-ASGNCOY                PIC X(0001).
+            07  CHDRENQ-ASGNNUM                PIC X(0008).
+            07  CHDRENQ-CNTBRANCH              PIC X(0002).
+            07  CHDRENQ-AGNTCOY                PIC X(0001).
+            07  CHDRENQ-AGNTNUM                PIC X(0008).
+            07  CHDRENQ-CNTCURR                PIC X(0003).
+            07  CHDRENQ-BILLFREQ               PIC X(0002).
+            07  CHDRENQ-BILLCHNL               PIC X(0002).
+            07  CHDRENQ-BTDATE                 PIC S9(08) COMP-3.
+            07  CHDRENQ-PTDATE                 PIC S9(08) COMP-3.
+            07  CHDRENQ-REGISTER               PIC X(0003).
+            07  CHDRENQ-POLINC                 PIC S9(04) COMP-3.
+            07  CHDRENQ-NXTSFX                 PIC S9(04) COMP-3.
+            07  CHDRENQ-SINSTAMTS.
+             09  CHDRENQ-SINSTAMT              PIC S9(15)V9(02) COMP-3
+                                                OCCURS 001 TIMES.
+            07  FILLER REDEFINES CHDRENQ-SINSTAMTS.
+             09  CHDRENQ-SINSTAMT06            PIC S9(15)V9(02) COMP-3.
+            07  CHDRENQ-INSTSTAMTS.
+             09  CHDRENQ-INSTSTAMT             PIC S9(15)V9(02) COMP-3
+                                                OCCURS 001 TIMES.
+            07  FILLER REDEFINES CHDRENQ-INSTSTAMTS.
+             09  CHDRENQ-INSTSTAMT06           PIC S9(15)V9(02) COMP-3.
+            07  CHDRENQ-INSTFROM               PIC S9(08) COMP-3.
+            07  CHDRENQ-FACTHOUS               PIC X(0002).
+            07  CHDRENQ-BANKKEY                PIC X(0010).
+            07  CHDRENQ-BANKACCKEY             PIC X(0020).
+            07  CHDRENQ-PSTATCODE              PIC X(0002).
+            07  CHDRENQ-POLSUM                 PIC S9(04) COMP-3.
+            07  CHDRENQ-MANDREF                PIC X(0005).
+            07  CHDRENQ-BILLCD                 PIC S9(08) COMP-3.
+            07  CHDRENQ-GRUPKEY                PIC X(0012).
+            07  CHDRENQ-MEMBSEL                PIC X(0010).
+            07  CHDRENQ-MPLNUM                 PIC X(0008).
+            07  CHDRENQ-USER-PROFILE           PIC X(0010).
+            07  CHDRENQ-JOB-NAME               PIC X(0010).
+            07  CHDRENQ-DATIME                 PIC X(0026).
+      *
+

@@ -1,0 +1,16 @@
+       01  SMTP-VALID-PREFIXES.
+           03  SMTP-ITEM               PIC X(02) VALUE 'IT'.
+           03  SMTP-ITMH               PIC X(02) VALUE 'HE'.
+           03  SMTP-SANC               PIC X(02) VALUE 'SA'.
+           03  SMTP-JCTL               PIC X(02) VALUE 'JC'.
+           03  SMTP-PASS               PIC X(02) VALUE 'PA'.
+           03  SMTP-BATC               PIC X(02) VALUE 'BA'.
+           03  SMTP-STAB               PIC X(02) VALUE 'ST'.
+           03  SMTP-JOBD               PIC X(02) VALUE 'JB'.
+           03  SMTP-JOBC               PIC X(02) VALUE 'JB'.
+           03  SMTP-JOBA               PIC X(02) VALUE 'JB'.
+           03  SMTP-RCNR               PIC X(02) VALUE 'RR'.
+           03  SMTP-RCND               PIC X(02) VALUE 'RR'.
+           03  SMTP-CTLT               PIC X(02) VALUE 'CT'.
+           03  SMTP-BBAL               PIC X(02) VALUE 'BB'.
+

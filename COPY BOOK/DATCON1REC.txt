@@ -1,0 +1,12 @@
+      *
+      *   DATCON1REC
+      *
+       01  DTC1-DATCON1-REC.
+           03  DTC1-FUNCTION           PIC X(04).
+           03  DTC1-STATUZ             PIC X(04).
+           03  DTC1-INT-DATEX.
+               05  DTC1-INT-DATE       PIC 9(08).
+           03  DTC1-EXT-DATE           PIC X(10).
+           03  FILLER                  PIC X(54).
+      *
+

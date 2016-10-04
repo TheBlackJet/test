@@ -1,0 +1,426 @@
+      *************************************************************
+      *                                                           *
+      *  THIS COPYBOOK NO LONGER NEEDS TO BE CHANGED TO SUPPORT   *
+      *               ADDITIONAL FIELD WINDOWING.                 *
+      *                                                           *
+      *  The screen io generators will load the additional        *
+      *  fields identified in the field dictionary into the       *
+      *  field 'ADDITIONAL-FIELDS'. The additional fields will    *
+      *  be in the same order as the they appear in the field     *
+      *  dictionary and will be in the same cobol format as       *
+      *  they appear in the SxxxxSCR copybook generated.          *
+      *                                                           *
+      *  Use the following code in your window programs:          *
+      *                                                           *
+      *01  WSSP-REDEFINES.                                        *
+      *    03  WSAA-xxxxxxxxxx         PIC X(03).                 *
+      *    03  WSAA-xxxxxxxxxx         PIC 9(07)V9(02).           *
+      *    03  WSAA-xxxxxxxxxx         PIC 9(08).                 *
+      *                                                           *
+      *       ::::::                                              *
+      *                                                           *
+      *    MOVE ADDITIONAL-FIELDS      OF WSSP-USER-AREA          *
+      *                                TO WSSP-REDEFINES.         *
+      *                                                           *
+      *                                                           *
+      *                                          07/10/1992  CJS  *
+      *                               Paxus AS/400 Tech Services  *
+      *************************************************************
+      *                    AMENDMENT  HISTORY                     *
+      *************************************************************
+      * DATE.....   BY.. AMENDMENT......................     NUMBER
+      *
+      * 14/01/1988  HS   This copybook was altered in two dev-  001
+      *                  elopment environments and both ver-    001
+      *                  sions were transferred. FSU additions  001
+      *                  were clobbered. This amendment puts    001
+      *                  the FSU additions back in.             001
+      * 26/01/1988  K.C. To add fields for window requirement   002
+      * 12/02/1988  S.F. Cargo tfer vessel/voyage window fields 003
+      * 17/02/1988  K.H. U/L testrig window                     004
+      * 19/02/1988  K.E. Extra fields on client window          005
+      * 06/03/1988  S.F. Claim Cash Receipt window fields       006
+      * 09/03/1988  K.E. Extra fields for client windows        007
+      * 15/03/1988  K.T. Redefine a new additional field        008
+      * 13/07/1988  B.W. Agent/client choice window             UK9
+      * 15/04/1988  S.F. Polisy Claims Premium Class fields     009
+      * 19/04/1988  S.F. Polisy Claims Reserve Code fields      010
+      * 26/04/1988  K.C. Debtors Account fields                 011
+      * 15/04/1988  P.S. LTTYNO fields added for Recompilation  RC1
+      * 01/06/1988  K.H. U/L Allocation override fields         012
+      * 01/06/1988  S.B. R/I transaction number fields          013
+      * 23/06/1988  K.H. U/L Allocation override fields altered 014
+      * 05/07/1988  K.E. Fund ID for location window            015
+      * 06/07/1988  T.T. Institution location window            016
+      * 14/07/1988  K.H. U/L Unit tran inquiry window           017
+      * 24/07/1988  H.S. Added fields for entity windowing      018
+      * 25/07/1988  H.S. Defined the fields used for program    019
+      *                  switching by field value.              019
+      * 29/07/1988  H.S. Payee selection by PTCODE              020
+      * 15/08/1988  B.J. Added fields for GL Account windowing. 021
+      * 17/08/1988  H.S. Additional data now passed for <019>   022
+      * 23/08/1988  A.L. Reinsurance Alterations options window 023
+      * 30/08/1988  T.T. Master Policy Contract variations      024
+      *                  windwow
+      * 08/11/1988  RAH. Added fields for Bank/Branch windowing 025
+      * 14/10/1988  F.A. Save nextprogs area added              026
+      * 14/06/1989  JET  Add fields for Premium Class windowing 027
+      *
+      *
+      * 15/03/1989  SCL. ADDED GROUP DETAILS                    026
+      * 02/11/1989  JCS  GSU05 FIELDS ADDED                     028
+      * 28/11/1989  CJS  NEW FIELDS FOR REQN WINDOWING          029
+      * 19/06/1990  J.O. Include Bankcode in WINDOWING          030
+      * 18/07/1990  G.N. DD Mandate Fields for windowing.       031
+      * 23/04/1991  S.DS Added RKTYP fields for windowing       032
+      * 29/10/1991  N.F. Change windowing on Payments S/Menu    033
+      * 20/11/1991  OKE  Add PAYRSEQNUM fields for windowing.   034
+      * 29/06/1992  A.S. Add PERIL fields for windowing.        035
+      *
+      ***********************************************************************
+      *                                                                     *
+      * ......... New Version of the Amendment History.                     *
+      *                                                                     *
+      ***********************************************************************
+      *           AMENDMENT  HISTORY                                        *
+      ***********************************************************************
+      * DATE.... VSN/MOD  WORK UNIT    BY....                               *
+      *                                                                     *
+      * 24/10/97  01/01   BKACT        Ani Susilo                           *
+      *           Increase BANKACCKEY to 20 Characters                      *
+      *           Decrease FILLER by 10 characters                          *
+      *                                                                     *
+      **DD/MM/YY*************************************************************
+       01  WSSP-USER-AREA.
+         02  STANDARD-FIELDS.
+           03  WSSP-WINDOW-FIELD       PIC X(10).
+           03  WSSP-WINDOW-TYPE        PIC X(01).
+           03  WSSP-WINDOW-SUB-TYPE    PIC X(01).
+           03  WSSP-WINDOW-TABLE       PIC X(05).
+           03  WSSP-TABLE-COMPANY      PIC X(01).
+           03  WSSP-VALUE              PIC X(30).
+           03  WSSP-CONFIRMATION       PIC X(70).
+      **** 03  FILLER                  PIC X(50).                       <026>
+           03  WSSP-SAVE-NEXT1PROG     PIC X(05).                       <026>
+           03  WSSP-SAVE-NEXT2PROG     PIC X(05).                       <026>
+           03  WSSP-SAVE-NEXT3PROG     PIC X(05).                       <026>
+           03  WSSP-SAVE-NEXT4PROG     PIC X(05).                       <026>
+           03  FILLER                  PIC X(30).                       <026>
+           03  FILLER                  PIC X(50).
+         02  ADDITIONAL-FIELDS.
+           03  FILLER                  PIC X(200).
+         02  CPYSEL-FIELDS   REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-BKCD               PIC X(2).
+           03  FILLER                  PIC X(198).
+         02  PRCL-FIELDS     REDEFINES ADDITIONAL-FIELDS.               <009>
+           03  WSSP-CHDRNUM            PIC X(8).                        <009>
+           03  WSSP-RSKNO              PIC S9(04).                      <009>
+           03  WSSP-DATOCC             PIC S9(08).                      <009>
+           03  FILLER                  PIC X(180).                      <009>
+         02  RSCD-FIELDS     REDEFINES ADDITIONAL-FIELDS.               <010>
+           03  WSSP-PRCL               PIC X(4).                        <010>
+           03  FILLER                  PIC X(196).                      <010>
+         02  DBTACC-FIELDS   REDEFINES ADDITIONAL-FIELDS.               <011>
+           03  WSSP-DBTACT             PIC X(1).                        <011>
+           03  FILLER                  PIC X(199).                      <011>
+         02  CSHSEL-FIELDS   REDEFINES ADDITIONAL-FIELDS.               <006>
+           03  WSSP-CBKCD              PIC X(2).                        <006>
+           03  FILLER                  PIC X(198).                      <006>
+         02  VOYGE-FIELDS    REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-VESSEL             PIC X(10).
+           03  FILLER                  PIC X(190).
+         02  STVOYG-FIELDS   REDEFINES ADDITIONAL-FIELDS.               <003>
+           03  WSSP-STVESR             PIC X(10).                       <003>
+           03  FILLER                  PIC X(190).                      <003>
+         02  OPTEXTIND-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-WINPRPOPEX         PIC X(80).
+           03  FILLER                  PIC X(120).
+         02  OPTXIND-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-WINALTOPEX         PIC X(80).
+           03  FILLER                  PIC X(120).
+         02  PREMAJ-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-WINDPREMAJ         PIC X(80).
+           03  FILLER                  PIC X(120).
+         02  PREMADJ-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-WINPAJADON         PIC X(80).
+           03  FILLER                  PIC X(120).
+         02  LINQCHSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-LINQCHNO           PIC X(08).
+           03  FILLER                  PIC X(192).
+         02  LRISEL-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-WINLRI             PIC X(100).
+           03  FILLER                  PIC X(100).
+         02  RIDTSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-WINLRI             PIC X(100).
+           03  WSSP-ALLOCAT            PIC S9(09)V9(02).
+           03  WSSP-TREATYCD           PIC X(05).
+           03  FILLER                  PIC X(84).
+         02  ACNUM-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-ACCPFX             PIC X(02).
+           03  FILLER                  PIC X(198).
+         02  FNDOPT-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-WINFNDOPT          PIC X(120).
+           03  WSSP-INST-PREM          PIC S9(09)V9(02).
+           03  WSSP-SINGLE-PREMIUM     PIC S9(09)V9(02).
+           03  FILLER                  PIC X(58).
+         02  CHGOPT-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-WINCHGOPT          PIC X(150).
+           03  FILLER                  PIC X(50).
+         02  ICHGOPT-FIELDS REDEFINES ADDITIONAL-FIELDS.                <008>
+           03  WSSP-WINICHGOPT         PIC X(150).                      <008>
+           03  FILLER                  PIC X(50).                       <008>
+         02  RSKTYPE-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-CNTTYP             PIC X(03).
+           03  FILLER                  PIC X(197).
+         02  SCLS-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-RISKTY             PIC X(03).
+           03  FILLER                  PIC X(197).
+         02  ASCTRN-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-LTRCDE             PIC X(04).
+           03  WSSP-RITRANNO           PIC 9(05).
+           03  WSSP-RIEFDT             PIC X(10).
+           03  FILLER                  PIC X(181).
+         02  RIMJSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-WINLRI             PIC X(100).
+           03  WSSP-ALLOCAT            PIC S9(09)V9(02).
+           03  WSSP-TREATYCD           PIC X(05).
+           03  FILLER                  PIC X(84).
+         02  DOCSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <002>
+           03  WSSP-ACTION             PIC X(01).                       <002>
+           03  WSSP-SUBMNUPROG         PIC X(05).                       <002>
+           03  FILLER                  PIC X(194).                      <002>
+         02  ULMSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <004>
+           03  WSSP-STRTPROG           PIC X(01).                       <004>
+           03  WSSP-CHDRNUM            PIC X(08).                       <004>
+           03  WSSP-ULTRIGA            PIC X(36).                       <004>
+           03  FILLER                  PIC X(155).                      <004>
+         02  PAYEESEL-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-PTCODE             PIC X(02).
+           03  FILLER                  PIC X(198).
+         02  CLTDTL-FIELDS   REDEFINES ADDITIONAL-FIELDS.               <007>
+           03  WSSP-CLNTNUM            PIC X(8).                        <007>
+           03  FILLER                  PIC X(192).                      <007>
+         02  CLTADD-FIELDS   REDEFINES ADDITIONAL-FIELDS.               <007>
+           03  WSSP-CLNTNUM            PIC X(8).                        <007>
+           03  FILLER                  PIC X(192).                      <007>
+         02  CLTADDRW-FIELDS   REDEFINES ADDITIONAL-FIELDS.             <007>
+           03  WSSP-CLNTNUM            PIC X(8).                        <007>
+           03  FILLER                  PIC X(192).                      <007>
+         02  SURNAMEW-FIELDS   REDEFINES ADDITIONAL-FIELDS.             <007>
+           03  WSSP-CLNTNUM            PIC X(8).                        <007>
+           03  FILLER                  PIC X(192).                      <007>
+         02  CORPNAMW-FIELDS   REDEFINES ADDITIONAL-FIELDS.             <007>
+           03  WSSP-CLNTNUM            PIC X(8).                        <007>
+           03  FILLER                  PIC X(192).                      <007>
+         02  LTTYNO-FIELDS   REDEFINES ADDITIONAL-FIELDS.                <RC1>
+           03  WSSP-TTYLIN             PIC 9(02).                        <RC1>
+           03  WSSP-RISKPER            PIC S9(03)V9(02).                 <RC1>
+           03  WSSP-TTYAMT             PIC X(11).                        <RC1>
+           03  FILLER                  PIC X(182).                       <RC1>
+     **  02  ALCOPT-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <014>
+     **    03  WSSP-WINALCOPT          PIC X(150).                      <014>
+     **    03  WSSP-CRTABLE            PIC X(04).                       <014>
+     **    03  WSSP-RISK-CESS-AGE      PIC 9(03).                       <014>
+     **    03  WSSP-RISK-CESS-TERM     PIC 9(03).                       <014>
+     **    03  FILLER                  PIC X(40).                       <014>
+         02  ALCOPTM-FIELDS REDEFINES ADDITIONAL-FIELDS.                <012>
+           03  WSSP-WINALCOPT          PIC X(150).                      <012>
+           03  WSSP-PREM-CESS-AGE      PIC 9(03).                       <014>
+           03  WSSP-PREM-CESS-TERM     PIC 9(03).                       <014>
+           03  WSSP-MINCTRM            PIC 9(03).                       <014>
+           03  FILLER                  PIC X(41).                       <014>
+     **    03  WSSP-CRTABLE            PIC X(04).                       <014>
+     **    03  WSSP-MATAGE             PIC 9(03).                       <014>
+     **    03  WSSP-MATTRM             PIC 9(03).                       <014>
+     **    03  FILLER                  PIC X(40).                       <014>
+         02  RTRANNO-FIELDS REDEFINES ADDITIONAL-FIELDS.                <013>
+           03  WSSP-RACCSEL            PIC X(10).                       <013>
+           03  WSSP-COWNSEL            PIC X(10).                       <013>
+           03  FILLER                  PIC X(180).                      <013>
+         02  LOCNWIN-FIELDS REDEFINES ADDITIONAL-FIELDS.                <015>
+           03  WSSP-FUND               PIC X(08).                       <015>
+           03  FILLER                  PIC X(192).                      <015>
+         02  UTIIND-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <017>
+           03  WSSP-WINUTI             PIC X(150).                      <017>
+           03  WSSP-TODATE             PIC 9(08).                       <017>
+           03  FILLER                  PIC X(42).                       <017>
+         02  ENTITY-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <018>
+           03  WSSP-PGMNAM             PIC X(05).                       <018>
+           03  WSSP-SACSCODE           PIC X(02).                       <018>
+           03  FILLER                  PIC X(06).                       <018>
+           03  WSSP-ORIGCCY            PIC X(03).                       <018>
+           03  FILLER                  PIC X(184).                      <018>
+         02  CLTCSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.                <UK9>
+           03  WSSP-RFCODE             PIC X(02).                       <UK9>
+           03  FILLER                  PIC X(198).                      <UK9>
+         02  NUMBERSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.              <UK9>
+           03  WSSP-RFCODE             PIC X(02).                       <UK9>
+           03  FILLER                  PIC X(198).                      <UK9>
+         02  NUMSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <UK9>
+           03  WSSP-PTCODE             PIC X(02).                       <UK9>
+           03  FILLER                  PIC X(198).                      <UK9>
+         02  FILLER REDEFINES ADDITIONAL-FIELDS.                        <019>
+           03  WSSP-INVOKPGM           PIC X(05).                       <019>
+           03  WSSP-DEFINITM           PIC X(08).                       <019>
+           03  WSSP-ADDLFLD            PIC X(10).                       <022>
+           03  FILLER                  PIC X(177).                      <022>
+      *****03  FILLER                  PIC X(187).                      <019>
+         02  GLCODE-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <021>
+           03  FILLER                  PIC X(13).                       <021>
+           03  WSSP-CURRCODE           PIC X(03).                       <021>
+           03  FILLER                  PIC X(184).                      <021>
+         02  OLDGLCDE-FIELDS REDEFINES ADDITIONAL-FIELDS.               <021>
+           03  FILLER                  PIC X(13).                       <021>
+           03  WSSP-CURRCODE           PIC X(03).                       <021>
+           03  FILLER                  PIC X(184).                      <021>
+         02  NEWGLCDE-FIELDS REDEFINES ADDITIONAL-FIELDS.               <021>
+           03  FILLER                  PIC X(13).                       <021>
+           03  WSSP-CURRCODE           PIC X(03).                       <021>
+           03  FILLER                  PIC X(184).                      <021>
+         02  ACCOUNT-FIELDS REDEFINES ADDITIONAL-FIELDS.                <021>
+           03  FILLER                  PIC X(13).                       <021>
+           03  WSSP-CURRCODE           PIC X(03).                       <021>
+           03  FILLER                  PIC X(184).                      <021>
+         02  PAYESEL-FIELDS REDEFINES ADDITIONAL-FIELDS.                <020>
+           03  WSSP-PGMNAM             PIC X(05).                       <020>
+           03  WSSP-PTCODE             PIC X(02).                       <020>
+           03  FILLER                  PIC X(193).
+         02  MANDREF-FIELDS REDEFINES ADDITIONAL-FIELDS.                <031>
+           03  WSSP-PAYRNUM            PIC X(08).                       <031>
+           03  WSSP-BILLCD             PIC X(10).                       <031>
+           03  WSSP-BANKKEY            PIC X(10).                       <031>
+      **** 03  WSSP-BANKACCKEY         PIC X(10).                  <031><BKACT>
+      **** 03  FILLER                  PIC X(162).             <BKACT>  <031>
+           03  WSSP-BANKACCKEY         PIC X(20).                       <BKACT>
+           03  FILLER                  PIC X(152).                      <BKACT>
+         02  LENDSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.                <016>
+           03  WSSP-LENDBR             PIC X(02).                       <016>
+           03  WSSP-MPOLNUM            PIC X(08).                       <016>
+           03  WSSP-MBILMETH           PIC X(01).                       <016>
+           03  WSSP-MBILLFRQ           PIC X(02).                       <016>
+           03  FILLER                  PIC X(187).                      <016>
+         02  RIALIND-FIELDS REDEFINES ADDITIONAL-FIELDS.                <023>
+           03  WSSP-WINRIALIND         PIC X(150).                      <023>
+           03  FILLER                  PIC X(50).                       <023>
+         02  CMPVSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.                <024>
+           03  WSSP-CMPVAREA           PIC X(50).                       <024>
+           03  FILLER                  PIC X(150).                      <024>
+         02  BANKKEY-FIELDS REDEFINES ADDITIONAL-FIELDS.                <025>
+           03  WSSP-FACTHOUS           PIC X(02).                       <025>
+           03  WSSP-CURRCODE           PIC X(03).                       <025>
+           03  FILLER                  PIC X(195).                      <025>
+         02  BANKACCKEY-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-NUMSEL             PIC X(10).
+           03  WSSP-BANKKEY            PIC X(10).
+           03  WSSP-FACTHOUS           PIC X(02).
+           03  WSSP-CURRCODE           PIC X(03).
+           03  FILLER                  PIC X(175).
+         02  RCFMSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-PGMNAM             PIC X(05).
+           03  WSSP-RFCODE             PIC X(02).
+           03  FILLER                  PIC X(193).
+         02  SPRC-FIELDS REDEFINES ADDITIONAL-FIELDS.                    <027>
+           03  WSSP-CHDRTY             PIC X(03).                        <027>
+           03  WSSP-RSKTYP             PIC X(03).                        <027>
+           03  FILLER                  PIC X(194).                       <027>
+         02  GRUPNUM-FIELDS REDEFINES ADDITIONAL-FIELDS.
+           03  WSSP-GRUPNUM            PIC X(08).
+           03  FILLER                  PIC X(192).
+         02  COMPLIST-FIELDS REDEFINES ADDITIONAL-FIELDS.               <028>
+           03  WSSP-WINPROPCL          PIC X(80).                       <028>
+           03  FILLER                  PIC X(120).                      <028>
+         02  SPRCDU-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <028>
+           03  WSSP-CNTTYP             PIC X(03).                       <028>
+           03  WSSP-RISKTP             PIC X(03).                       <028>
+           03  FILLER                  PIC X(194).                      <028>
+         02  SPRCMA-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <028>
+           03  WSSP-CNTTYP             PIC X(03).                       <028>
+           03  WSSP-RISKTP             PIC X(03).                       <028>
+           03  FILLER                  PIC X(194).                      <028>
+         02  SPRTPC-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <028>
+           03  WSSP-CNTTYP             PIC X(03).                       <028>
+           03  WSSP-RISKTP             PIC X(03).                       <028>
+           03  FILLER                  PIC X(194).                      <028>
+         02  SPRCWA-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <028>
+           03  WSSP-CNTTYP             PIC X(03).                       <028>
+           03  WSSP-RISKTP             PIC X(03).                       <028>
+           03  FILLER                  PIC X(194).                      <028>
+         02  SSURPC-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <028>
+           03  WSSP-CNTTYP             PIC X(03).                       <028>
+           03  WSSP-RISKTP             PIC X(03).                       <028>
+           03  FILLER                  PIC X(194).                      <028>
+         02  STPLPC-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <028>
+           03  WSSP-CNTTYP             PIC X(03).                       <028>
+           03  WSSP-RISKTP             PIC X(03).                       <028>
+           03  FILLER                  PIC X(194).                      <028>
+         02  SACSTYPW-FIELDS REDEFINES ADDITIONAL-FIELDS.               <028>
+           03  WSSP-TRANSCODE          PIC X(04).                       <028>
+           03  FILLER                  PIC X(01).                       <028>
+           03  WSSP-SACSCODE           PIC X(02).                       <028>
+           03  FILLER                  PIC X(193).                      <028>
+         02  FRMKEY-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <028>
+           03  WSSP-PGMNAM             PIC X(05).                       <028>
+           03  WSSP-FRMSEL             PIC X(02).                       <028>
+           03  FILLER                  PIC X(193).                      <028>
+         02  TOKEY-FIELDS REDEFINES ADDITIONAL-FIELDS.                  <028>
+           03  WSSP-PGMNAM             PIC X(05).                       <028>
+           03  WSSP-TOSEL              PIC X(02).                       <028>
+           03  FILLER                  PIC X(193).                      <028>
+         02  RGACCOUNT-FIELDS REDEFINES ADDITIONAL-FIELDS.              <028>
+           03  FILLER                  PIC X(13).                       <028>
+           03  WSSP-CURRCODE           PIC X(03).                       <028>
+           03  FILLER                  PIC X(184).                      <028>
+         02  REQNO-FIELDS REDEFINES ADDITIONAL-FIELDS.                  <029>
+           03  WSSP-ACTION             PIC X(01).                       <029>
+           03  WSSP-WINDOWTYPE         PIC X(05).                       <029>
+      *    03  FILLER                  PIC X(194).                      <030>
+           03  WSSP-BANKCODE           PIC X(02).                       <030>
+           03  FILLER                  PIC X(192).                      <030>
+         02  RKTYP-FIELDS     REDEFINES ADDITIONAL-FIELDS.              <032>
+           03  WSSP-CHDRNUM            PIC X(8).                        <032>
+           03  WSSP-RKNO               PIC S9(04).                      <032>
+           03  WSSP-EFFDATE            PIC S9(08).                      <032>
+           03  FILLER                  PIC X(180).                      <032>
+         02  USERWORK-FIELDS.
+           03  WSSP-INITIALS-F         PIC X(02).
+           03  WSSP-CLTSEX-F           PIC X(01).
+           03  WSSP-ROLES-F.
+               05  WSSP-ROLE-F         PIC X(02) OCCURS 5.
+           03  WSSP-OCCPCODE-F         PIC X(04).
+           03  WSSP-CLTSTAT-F          PIC X(02).
+           03  WSSP-SRHLIMIT           PIC S9(07).
+   001*
+   001     03  WSSP-DOB01-F            PIC S9(08).
+   001     03  WSSP-DOB02-F            PIC S9(08).
+   001     03  WSSP-SURNAME-F          PIC X(30).
+   001     03  WSSP-GIVNAME-F          PIC X(20).
+   001     03  WSSP-CLTTYPE-F          PIC X(01).
+           03  WSSP-MIDDL01-F          PIC X(20).                       <005>
+           03  WSSP-MIDDL02-F          PIC X(20).                       <005>
+           03  WSSP-EXACT              PIC X(01).                       <005>
+           03  WSSP-SERVBRH-F          PIC X(02).                       <005>
+           03  FILLER                  PIC X(264).                      <005>
+   001*    03  FILLER                  PIC X(307).                      <005>
+   001*    03  FILLER                  PIC X(374).
+   001*
+   002***02  REQNNUM-FIELDS REDEFINES ADDITIONAL-FIELDS.           <028><033>
+   002*****03  WSSP-WINDOWTYPE         PIC X(05).                  <028><033>
+   002*****03  WSSP-BANKCODE           PIC X(02).                  <028><033>
+   002*****03  FILLER                  PIC X(193).                 <028><033>
+         02  PAYMENTNUM-FIELDS REDEFINES ADDITIONAL-FIELDS.             <033>
+           03  WSSP-WINDOWTYPE         PIC X(05).                       <033>
+           03  WSSP-REQNTYPE           PIC X(01).                       <033>
+           03  FILLER                  PIC X(194).                      <033>
+         02  PAYRSEQNUM-FIELDS REDEFINES ADDITIONAL-FIELDS.             <034>
+           03  WSSP-CHDRNUM            PIC X(08).                       <034>
+           03  WSSP-PAYRSEQNO          PIC S9(01).                      <034>
+           03  FILLER                  PIC X(191).                      <034>
+         02  PRLSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <035>
+           03  WSSP-ARTSEL             PIC X(03).                       <035>
+           03  WSSP-ARTDSC             PIC X(30).                       <035>
+           03  FILLER                  PIC X(167).                      <035>
+         02  RSKSEL-FIELDS REDEFINES ADDITIONAL-FIELDS.                 <035>
+           03  WSSP-POLNO              PIC X(08).                       <035>
+           03  WSSP-LOSSDATE           PIC X(10).                       <035>
+           03  FILLER                  PIC X(182).                      <035>
+

@@ -1,0 +1,627 @@
+      ************************************************************
+      *    MAINB ....  BATCH PROGRAM MAINLINE                   **
+      ************************************************************
+      *
+      ************************************************************
+      *              AMENDMENT  HISTORY                          *
+      ************************************************************
+      * DATE.....   BY..   AMENDMENT....................... NUMBER
+      *
+      * DD/MM/YY    X.X.   xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx NNN
+      *
+      * 14/02/94    DUNC   Comment out the Exit program as  001
+      *                    it should return BMANUNIT on a
+      *                    fatal error.
+      *
+      * 22/07/94    JOS    Use INIT-BRANCH only if DEFAULT- 002
+      *                    BRANCH not SET.
+      *
+      ***********************************************************************
+      *                                                                     *
+      * ......... New Version of the Amendment History.                     *
+      *                                                                     *
+      ***********************************************************************
+      *           AMENDMENT  HISTORY                                        *
+      ***********************************************************************
+      * DATE.... VSN/MOD  WORK UNIT    BY....                               *
+      *                                                                     *
+      * 16/10/95 01/01    A05916       JPD                                  *
+      *                   User # to be passed to BATCDOR via TRANID.        *
+      *                                                                     *
+      * 23/07/96  01/01   A06688       Frank Mulqueen                       *
+      *                   Correct problem with locking of BATC record.      *
+      *                   If a large comit count eg 1000 was specified,     *
+      *                   when the WRITS of BATC was processed it was       *
+      *                   unavailable to all other processes until this     *
+      *                   thread executed a commit. All the other           *
+      *                   threads would attempt to READH the BATC           *
+      *                   for 60 secoonds and then fail with a HELD         *
+      *                   status. This was due to the fact that it          *
+      *                   could take more than 60 secomnds to do 1000       *
+      *                   READH & DELET's on the SLCKPF file.               *
+      *                   Also the perform of 3500-COMIT needs to be        *
+      *                   processed before the call to BATCUP within        *
+      *                   005-RECORD-OK Section and also needs to be        *
+      *                   added as part of teh final comit processing       *
+      *                   prior to calling BATCUP. This is to ensure        *
+      *                   that all updates are done as part of the          *
+      *                   COMMIT processing within MAINB.                   *
+      *                                                                     *
+      * 04/06/97 01/03    MB0001       Brian Maguire                        *
+      *                   Change program to use the branch from the         *
+      *                   BSPR fiel instead of the BPRD file.               *
+      *                                                                     *
+      * 18/07/05  01/01   D06BAT       Brendan Gleeson                      *
+      *                   Create a seperate BATC record per thread in       *
+      *                   multi thread processes that perform financial     *
+      *                   batching.                                         *
+      *                   Note; If the close batch flag on the process      *
+      *                   definition is not Y (i.e. we want to use the same *
+      *                   BATC record in subsequent processes) then do not  *
+      *                   create seperate BATC records per thread.          *
+      *                                                                     *
+      **DD/MM/YY*************************************************************
+      *                                                                     *
+       000-MAIN SECTION.
+      ******************
+      *
+       000-MAIN-START.
+      *
+      * Set the statuz flag and time.
+      *
+           MOVE O-K                    TO WSSP-EDTERROR.
+           ACCEPT VRCM-TIMEX         FROM TIME.
+           MOVE VRCM-TIMEN             TO VRCM-TIME.
+           MOVE WSAA-PROG              TO SYSR-SUBRNAME.
+      *
+      * Move Linkage Parameters
+      *
+           MOVE LSAA-BSSCREC           TO BSSC-DATA-AREA.
+           MOVE LSAA-BSPRREC           TO BSPR-DATA-AREA.
+           MOVE LSAA-BPRDREC           TO BPRD-DATA-AREA.
+           MOVE LSAA-BUPAREC           TO BUPA-DATA-AREA.
+      *
+      *  Find or allocate an audit group
+      *
+           IF BPRD-AUTH-CODE        NOT = SPACES
+      ****    MOVE 'AUTO'              TO BATD-FUNCTION                 <D06BAT>
+              IF BPRD-THREADS-THIS-PROCESS > 1                          <D06BAT>
+                 AND BPRD-BCHCLSFLG = 'Y'                               <D06BAT>
+                 MOVE 'NEW'            TO BATD-FUNCTION                 <D06BAT>
+              ELSE                                                      <D06BAT>
+                 MOVE 'AUTO'           TO BATD-FUNCTION                 <D06BAT>
+              END-IF                                                    <D06BAT>
+              MOVE BSSC-DATIME-INIT (21:6)                              <A05916>
+                                       TO BATD-TRANID (17:6)            <A05916>
+              MOVE BSPR-COMPANY        TO BATD-COMPANY
+
+      ********IF BSSC-INIT-BRANCH       = SPACES                        <002>
+      ********   MOVE BPRD-DEFAULT-BRANCH TO BATD-BRANCH                <002>
+      ********ELSE                                                      <002>
+      ********   MOVE BSSC-INIT-BRANCH TO BATD-BRANCH                   <002>
+      ********END-IF                                                    <002>
+      ********IF BPRD-DEFAULT-BRANCH    = SPACES                   <002><MB0001>
+      ********   MOVE BSSC-INIT-BRANCH TO BATD-BRANCH              <002><MB0001>
+      ********ELSE                                                 <002><MB0001>
+      ********   MOVE BPRD-DEFAULT-BRANCH TO BATD-BRANCH           <002><MB0001>
+      ********END-IF                                               <002><MB0001>
+      *                                                                 <MB0001>
+      * Use the branch code off the BSPR file to open a batch           <MB0001>
+      *                                                                 <MB0001>
+              IF BSPR-DEFAULT-BRANCH    = SPACES                        <MB0001>
+                 MOVE BSSC-INIT-BRANCH TO BATD-BRANCH                   <MB0001>
+              ELSE                                                      <MB0001>
+                 MOVE BSPR-DEFAULT-BRANCH TO BATD-BRANCH                <MB0001>
+              END-IF                                                    <MB0001>
+      *                                                                 <MB0001>
+              MOVE BSSC-ACCT-YEAR      TO BATD-ACTYEAR
+              MOVE BSSC-ACCT-MONTH     TO BATD-ACTMONTH
+              MOVE BPRD-AUTH-CODE      TO BATD-TRCDE
+
+              CALL 'BATCDOR'        USING BATD-BATCDOR-REC
+
+              IF BATD-STATUZ        NOT = '****'
+                 MOVE BATD-BATCDOR-REC TO SYSR-PARAMS
+                 MOVE BATD-STATUZ      TO SYSR-STATUZ
+                 PERFORM 600-FATAL-ERROR
+              END-IF
+           END-IF.
+      *
+      *   Initialise the SOFTLOCK subroutine.
+      *
+           MOVE 'INIT'                 TO SFTL-FUNCTION.
+
+           CALL 'SFTLOCK'           USING SFTL-SFTLOCK-REC.
+      *
+      * If not a Continue or Skip restart initialise the control totals
+      *
+           IF (BSPR-CYCLE-COUNT         > 0)
+              PERFORM 0900-RESTART
+              IF (BPRD-RESTART-METHOD   = 1)
+                 PERFORM VARYING WSAA-CNT
+                         FROM 1 BY 1
+                         UNTIL WSAA-CNT = 50
+                    MOVE ZEROES        TO BSPR-BCONTOT(WSAA-CNT)
+                 END-PERFORM
+                 MOVE ZEROES           TO WSAA-COMMIT-CNT
+              END-IF
+           END-IF.
+      *
+       000-INIT.
+      *
+           PERFORM 1000-INITIALISE.
+      *
+       000-LOOP.
+      *
+           IF WSSP-EDTERROR             = O-K
+      *
+      * Set the initial number of records to be read.
+      *
+              MOVE RETRV               TO BSPR-FUNCTION
+              CALL 'BSPRIO'         USING BSPR-PARAMS
+
+              IF BSPR-STATUZ        NOT = O-K
+                 MOVE BSPR-PARAMS      TO SYSR-PARAMS
+                 PERFORM 600-FATAL-ERROR
+              END-IF
+
+              MOVE BSPR-CYCLE-COUNT    TO WSAA-CYCLE-CNT
+              IF BPRD-RESTART-METHOD    = 3
+                 ADD 1                 TO WSAA-CYCLE-CNT
+              ELSE
+                 MOVE 1                TO WSAA-CYCLE-CNT
+              END-IF
+
+              IF BPRD-RESTART-METHOD    = 1
+                 MOVE ZEROES           TO BSPR-CYCLE-COUNT
+              END-IF
+
+              PERFORM 2000-READ-FILE WSAA-CYCLE-CNT  TIMES
+
+              PERFORM UNTIL WSSP-EDTERROR = ENDP
+      *
+      * Increment the cycle count and check if the record read is required.
+      *
+                 ADD 1                 TO BSPR-CYCLE-COUNT
+
+                 MOVE KEEPS            TO BSPR-FUNCTION
+                 CALL 'BSPRIO'      USING BSPR-PARAMS
+
+                 IF BSPR-STATUZ     NOT = O-K
+                    MOVE BSPR-PARAMS   TO SYSR-PARAMS
+                    PERFORM 600-FATAL-ERROR
+                 END-IF
+
+                 PERFORM 2500-EDIT
+      *
+      * Update the time and perform any database updates
+      *
+                 IF WSSP-EDTERROR       = O-K
+                    ACCEPT VRCM-TIMEX FROM TIME
+                    MOVE VRCM-TIMEN    TO VRCM-TIME
+                    PERFORM 3000-UPDATE
+                 END-IF
+      *
+      * Check the return statuz from the Edit or Update sections
+      *
+                 EVALUATE  WSSP-EDTERROR
+
+                    WHEN ENDP
+                       ADD 1           TO BSPR-NOT-PROCESSED-COUNT
+                    WHEN SPACES
+                       ADD 1           TO BSPR-NOT-PROCESSED-COUNT
+                    WHEN O-K
+                       PERFORM 005-RECORD-OK
+                    WHEN OTHER
+                       PERFORM 006-RECORD-ERROR
+
+                 END-EVALUATE
+
+                 MOVE KEEPS            TO BSPR-FUNCTION
+                 CALL 'BSPRIO'      USING BSPR-PARAMS
+
+                 IF BSPR-STATUZ     NOT = O-K
+                    MOVE BSPR-PARAMS   TO SYSR-PARAMS
+                    PERFORM 600-FATAL-ERROR
+                 END-IF
+
+                 IF WSSP-EDTERROR   NOT = ENDP
+                    MOVE O-K           TO WSSP-EDTERROR
+                    PERFORM 2000-READ-FILE
+                 END-IF
+
+              END-PERFORM
+      *
+      * Commit any remaining control totals and records.
+      *
+                                                                        <A06688>
+              PERFORM 3500-COMMIT                                       <A06688>
+                                                                        <A06688>
+              IF BPRD-AUTH-CODE     NOT = SPACES
+                 MOVE WRITS            TO BCUP-FUNCTION
+                 MOVE WSAA-COMMIT-CNT  TO BCUP-TRANCNT
+                 MOVE ZEROES           TO BCUP-SUB
+                                          BCUP-ETREQCNT
+                                          BCUP-BCNT
+                                          BCUP-BVAL
+                                          BCUP-ASCNT
+                 MOVE 'BA'             TO BCUP-BATCPFX
+                 MOVE BSPR-COMPANY     TO BCUP-BATCCOY
+      ***********IF BSSC-INIT-BRANCH    = SPACES                        <002>
+      ***********   MOVE BPRD-DEFAULT-BRANCH TO BCUP-BATCBRN            <002>
+      ***********ELSE                                                   <002>
+      ***********   MOVE BSSC-INIT-BRANCH TO BCUP-BATCBRN               <002>
+      ***********END-IF                                                 <002>
+      ***********IF BPRD-DEFAULT-BRANCH = SPACES                   <002><MB0001>
+      ***********   MOVE BSSC-INIT-BRANCH TO BCUP-BATCBRN          <002><MB0001>
+      ***********ELSE                                              <002><MB0001>
+      ***********   MOVE BPRD-DEFAULT-BRANCH TO BCUP-BATCBRN       <002><MB0001>
+      ***********END-IF                                            <002><MB0001>
+      *
+      * Use the branch off the BSPR record to update the batch totals
+      *                                                                 <MB0001>
+                 IF BSPR-DEFAULT-BRANCH = SPACES                        <MB0001>
+                    MOVE BSSC-INIT-BRANCH TO BCUP-BATCBRN               <MB0001>
+                 ELSE                                                   <MB0001>
+                    MOVE BSPR-DEFAULT-BRANCH TO BCUP-BATCBRN            <MB0001>
+                 END-IF                                                 <MB0001>
+      *                                                                 <MB0001>
+                 MOVE BSSC-ACCT-YEAR   TO BCUP-BATCACTYR
+                 MOVE BSSC-ACCT-MONTH  TO BCUP-BATCACTMN
+                 MOVE BPRD-AUTH-CODE   TO BCUP-BATCTRCDE
+                 MOVE BATD-BATCH       TO BCUP-BATCBATCH
+
+                 CALL 'BATCUP'      USING BCUP-BATCUP-REC
+
+                 IF BCUP-STATUZ     NOT = O-K
+                    MOVE BCUP-BATCUP-REC TO SYSR-PARAMS
+                    MOVE BCUP-STATUZ     TO SYSR-STATUZ
+                    PERFORM 600-FATAL-ERROR
+                 END-IF
+              END-IF
+
+              MOVE WRITS               TO BSPR-FUNCTION
+              CALL 'BSPRIO'         USING BSPR-PARAMS
+
+              IF BSPR-STATUZ        NOT = O-K
+                 MOVE BSPR-PARAMS      TO SYSR-PARAMS
+                 PERFORM 600-FATAL-ERROR
+              END-IF
+
+              MOVE KEEPS               TO BSPR-FUNCTION
+              CALL 'BSPRIO'         USING BSPR-PARAMS
+
+              IF BSPR-STATUZ        NOT = O-K
+                 MOVE BSPR-PARAMS      TO SYSR-PARAMS
+                 PERFORM 600-FATAL-ERROR
+              END-IF
+
+              CALL 'CONCOMIT'
+
+           END-IF.
+      *
+       000-ERROR.
+      *
+      * Log any errors
+      *
+           IF (WSSP-EDTERROR        NOT = SPACES) AND
+              (WSSP-EDTERROR        NOT = ENDP)
+              MOVE WSSP-EDTERROR       TO CONL-ERROR
+              MOVE WSAA-PROG           TO CONL-SUBRNAME
+
+              CALL 'CONLOG'         USING CONL-CONLOG-REC
+           END-IF.
+      *
+       000-CLOSE.
+      *
+      *  Release all softlocks held by the job.
+      *
+           MOVE 'UALL'                 TO SFTL-FUNCTION.
+
+           CALL 'SFTLOCK'           USING SFTL-SFTLOCK-REC.
+      *
+      * Close any open files
+      *
+           PERFORM 4000-CLOSE.
+                                                                        <D06BAT>
+      * If we are creating a separate BATC record for each thread of a  <D06BAT>
+      * multithread process then close the BATC record at the end of    <D06BAT>
+      * the main program.                                               <D06BAT>
+                                                                        <D06BAT>
+           IF BPRD-AUTH-CODE       NOT = SPACES                         <D06BAT>
+              IF BPRD-THREADS-THIS-PROCESS > 1                          <D06BAT>
+                 AND BPRD-BCHCLSFLG  = 'Y'                              <D06BAT>
+                 MOVE 'CLOSE'                TO BATD-FUNCTION           <D06BAT>
+                 CALL 'BATCDOR'      USING   BATD-BATCDOR-REC           <D06BAT>
+                 IF BATD-STATUZ              NOT = '****'               <D06BAT>
+                    MOVE BATD-BATCDOR-REC   TO SYSR-PARAMS              <D06BAT>
+                    PERFORM 600-FATAL-ERROR                             <D06BAT>
+                 END-IF                                                 <D06BAT>
+              END-IF                                                    <D06BAT>
+           END-IF.                                                      <D06BAT>
+      *
+       000-PROG-EXIT.
+           EXIT PROGRAM.
+      /
+       001-CALL-CONTOT SECTION.
+      *************************
+      *
+       001-CONTOT.
+      *
+           CALL 'CONTOT'            USING CONT-CONTOT-REC.
+      *
+       001-EXIT.
+           EXIT.
+      /
+       003-CALL-CONLOG SECTION.
+      **************************
+      *
+       003-CONLOG.
+      *
+           MOVE WSAA-PROG              TO CONL-SUBRNAME
+
+           CALL 'CONLOG'            USING CONL-CONLOG-REC.
+      *
+       003-EXIT.
+           EXIT.
+      /
+       005-RECORD-OK SECTION.
+      ***********************
+      *
+       005-MAIN.
+      *
+      * Increment the Commit count
+      *
+           ADD 1                       TO WSAA-COMMIT-CNT
+      *
+      * If the Commit point is reached :
+      *    Reset the Commit count
+      *
+           IF WSAA-COMMIT-CNT          >= BPRD-CYCLES-PER-COMMIT
+                                                                        <A06688>
+      *                                                                 <A06688>
+      * Perform any required COMMIT processing.                         <A06688>
+      *                                                                 <A06688>
+              PERFORM 3500-COMMIT                                       <A06688>
+                                                                        <A06688>
+      *
+      *    Update the audit group values
+      *
+              IF BPRD-AUTH-CODE     NOT = SPACES
+                 MOVE WRITS            TO BCUP-FUNCTION
+                 MOVE WSAA-COMMIT-CNT  TO BCUP-TRANCNT
+                 MOVE ZEROES           TO BCUP-SUB
+                                          BCUP-ETREQCNT
+                                          BCUP-BCNT
+                                          BCUP-BVAL
+                                          BCUP-ASCNT
+                 MOVE 'BA'             TO BCUP-BATCPFX
+                 MOVE BSPR-COMPANY     TO BCUP-BATCCOY
+      ***********IF BSSC-INIT-BRANCH    = SPACES                        <002>
+      ***********   MOVE BPRD-DEFAULT-BRANCH TO BCUP-BATCBRN            <002>
+      ***********ELSE                                                   <002>
+      ***********   MOVE BSSC-INIT-BRANCH TO BCUP-BATCBRN               <002>
+      ***********END-IF                                                 <002>
+      ***********IF BPRD-DEFAULT-BRANCH = SPACES                   <002><MB0001>
+      ***********   MOVE BSSC-INIT-BRANCH TO BCUP-BATCBRN          <002><MB0001>
+      ***********ELSE                                              <002><MB0001>
+      ***********   MOVE BPRD-DEFAULT-BRANCH TO BCUP-BATCBRN       <002><MB0001>
+      ***********END-IF                                            <002><MB0001>
+      *                                                                 <MB0001>
+      * Use the branch code off BSPR                                    <MB0001>
+      *                                                                 <MB0001>
+                 IF BSPR-DEFAULT-BRANCH = SPACES                        <MB0001>
+                    MOVE BSSC-INIT-BRANCH TO BCUP-BATCBRN               <MB0001>
+                 ELSE                                                   <MB0001>
+                    MOVE BSPR-DEFAULT-BRANCH TO BCUP-BATCBRN            <MB0001>
+                 END-IF                                                 <MB0001>
+      *                                                                 <MB0001>
+                 MOVE BSSC-ACCT-YEAR   TO BCUP-BATCACTYR
+                 MOVE BSSC-ACCT-MONTH  TO BCUP-BATCACTMN
+                 MOVE BPRD-AUTH-CODE   TO BCUP-BATCTRCDE
+                 MOVE BATD-BATCH       TO BCUP-BATCBATCH
+
+                 CALL 'BATCUP'      USING BCUP-BATCUP-REC
+
+                 IF BCUP-STATUZ     NOT = O-K
+                    MOVE BCUP-BATCUP-REC TO SYSR-PARAMS
+                    MOVE BCUP-STATUZ     TO SYSR-STATUZ
+                    PERFORM 600-FATAL-ERROR
+                 END-IF
+              END-IF
+
+              MOVE ZEROES              TO WSAA-COMMIT-CNT
+      ****                                                              <A06688>
+      **** Release all softlocks held by the job                        <A06688>
+      ****                                                              <A06688>
+      ****    MOVE 'UALL'             TO SFTL-FUNCTION                  <A06688>
+      ****                                                              <A06688>
+      ****    CALL 'SFTLOCK'       USING SFTL-SFTLOCK-REC               <A06688>
+      ****                                                              <A06688>
+      **** Perform any required commit processing                       <A06688>
+      ****                                                              <A06688>
+      ****    PERFORM 3500-COMMIT                                       <A06688>
+      *
+      *    Commit the control totals and database changes
+      *
+              MOVE WRITS               TO BSPR-FUNCTION
+              CALL 'BSPRIO'         USING BSPR-PARAMS
+
+              IF BSPR-STATUZ        NOT = O-K
+                 MOVE BSPR-PARAMS      TO SYSR-PARAMS
+                 PERFORM 600-FATAL-ERROR
+              END-IF
+
+              MOVE KEEPS               TO BSPR-FUNCTION
+              CALL 'BSPRIO'         USING BSPR-PARAMS
+
+              IF BSPR-STATUZ        NOT = O-K
+                 MOVE BSPR-PARAMS      TO SYSR-PARAMS
+                 PERFORM 600-FATAL-ERROR
+              END-IF
+
+              CALL 'CONCOMIT'
+
+      *                                                                 <A06688>
+      *    Release all softlocks held by the job                        <A06688>
+      *                                                                 <A06688>
+              MOVE 'UALL'             TO SFTL-FUNCTION                  <A06688>
+                                                                        <A06688>
+              CALL 'SFTLOCK'       USING SFTL-SFTLOCK-REC               <A06688>
+                                                                        <A06688>
+              MOVE RETRV               TO BSPR-FUNCTION
+              CALL 'BSPRIO'         USING BSPR-PARAMS
+
+              IF BSPR-STATUZ        NOT = O-K
+                 MOVE BSPR-PARAMS      TO SYSR-PARAMS
+                 PERFORM 600-FATAL-ERROR
+              END-IF
+           END-IF.
+      *
+       005-EXIT.
+           EXIT.
+      /
+       006-RECORD-ERROR SECTION.
+      **************************
+      *
+       006-MAIN.
+      *
+      * Log the error message
+      *
+           MOVE WSSP-EDTERROR          TO CONL-ERROR.
+           MOVE WSAA-PROG              TO CONL-SUBRNAME.
+
+           CALL 'CONLOG'            USING CONL-CONLOG-REC.
+      *
+      * Set the softlock to an error statuz
+      *
+           MOVE 'EROR'                 TO SFTL-FUNCTION.
+
+           CALL 'SFTLOCK'           USING SFTL-SFTLOCK-REC.
+      *
+      * Increment the error count
+      *
+           ADD 1                       TO BSPR-ERROR-COUNT.
+
+           MOVE KEEPS                  TO BSPR-FUNCTION
+           CALL 'BSPRIO'            USING BSPR-PARAMS
+
+           IF BSPR-STATUZ           NOT = O-K
+              MOVE BSPR-PARAMS         TO SYSR-PARAMS
+              PERFORM 600-FATAL-ERROR
+           END-IF
+
+           IF WSSP-EDTERROR             = BOMB
+      *
+      * If the process is critical exit the program
+      *
+              IF BPRD-CRITICAL-PROCESS  = 3
+                 MOVE WRITS            TO BSPR-FUNCTION
+                 CALL 'BSPRIO'      USING BSPR-PARAMS
+
+                 IF BSPR-STATUZ     NOT = O-K
+                    MOVE BSPR-PARAMS   TO SYSR-PARAMS
+                    PERFORM 600-FATAL-ERROR
+                 END-IF
+
+                 MOVE BOMB             TO LSAA-STATUZ
+                 EXIT PROGRAM
+              ELSE
+      *
+      * Log the error message
+      * Increment the error count with the number of uncommited records
+      * Reset the commit count
+      *
+                 MOVE
+                   'Unnecessary rollback of          processed records'
+                                       TO CONL-MESSAGE
+                 MOVE WSAA-COMMIT-CNT  TO CONL-MESSAGE(25:8)
+                 MOVE WSAA-PROG        TO CONL-SUBRNAME
+
+                 CALL 'CONLOG'      USING CONL-CONLOG-REC
+
+                 ADD WSAA-COMMIT-CNT   TO BSPR-ERROR-COUNT
+                 MOVE ZEROES           TO WSAA-COMMIT-CNT
+      *
+      * Clear the audit group totals
+      *
+                 IF BPRD-AUTH-CODE  NOT = SPACES
+                    MOVE RLSE          TO BCUP-FUNCTION
+
+                    CALL 'BATCUP'   USING BCUP-BATCUP-REC
+                 END-IF
+      *
+      * Perform any required Rollback processing
+      *
+                 PERFORM 3600-ROLLBACK
+      *
+      * Rollback all database changes
+      *
+                 ROLLBACK
+      *
+      * If the subject (i.e. record) is critical set all softlocks
+      *  held by the job to a held statuz, otherwise release them
+      *
+                 IF BPRD-CRITICAL-PROCESS = 2
+                    MOVE 'HOLD'        TO SFTL-FUNCTION
+                 ELSE
+                    MOVE 'UALL'        TO SFTL-FUNCTION
+                 END-IF
+
+                 CALL 'SFTLOCK'     USING SFTL-SFTLOCK-REC
+      *
+      * Commit the control totals
+      *
+                 MOVE KEEPS            TO BSPR-FUNCTION
+                 CALL 'BSPRIO'      USING BSPR-PARAMS
+
+                 IF BSPR-STATUZ     NOT = O-K
+                    MOVE BSPR-PARAMS   TO SYSR-PARAMS
+                    PERFORM 600-FATAL-ERROR
+                 END-IF
+
+                 MOVE WRITS            TO BSPR-FUNCTION
+                 CALL 'BSPRIO'      USING BSPR-PARAMS
+
+                 IF BSPR-STATUZ     NOT = O-K
+                    MOVE BSPR-PARAMS   TO SYSR-PARAMS
+                    PERFORM 600-FATAL-ERROR
+                 END-IF
+      *
+      * Commit changes to the database
+      *
+                 COMMIT
+      *
+      * Reset the statuz field
+      *
+                 MOVE SPACES           TO WSSP-EDTERROR
+              END-IF
+           END-IF.
+      *
+       006-EXIT.
+           EXIT.
+      /
+       600-FATAL-ERROR  SECTION.
+      **************************
+      *
+       610-FATAL.
+      *
+           IF (SYSR-STATUZ          NOT = SPACES) OR
+              (SYSR-SYSERR-STATUZ   NOT = SPACES)
+              MOVE '4'                 TO SYSR-SYSERR-TYPE
+           ELSE
+              MOVE '3'                 TO SYSR-SYSERR-TYPE
+           END-IF.
+
+           CALL 'SYSERR'            USING SYSR-SYSERR-REC.
+
+           MOVE BOMB                   TO WSSP-EDTERROR
+                                          LSAA-STATUZ.
+      *
+      *690-EXIT.
+      *    EXIT PROGRAM.
+      *
+       699-STOP.
+           STOP RUN.
+      /
+

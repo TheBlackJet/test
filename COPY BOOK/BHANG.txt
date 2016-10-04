@@ -1,0 +1,393 @@
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. BHANG.
+      *
+      * Copyright 1986-2016, Computer Sciences Corporation.
+      *
+      *
+      *REMARKS.
+      *   This is a skeleton for a batch mainline program.
+      *
+      *   The basic procedure division logic is for reading and
+      *     printing a simple input primary file. The overall structure
+      *     is as follows:
+      *
+      *   Initialise
+      *     - retrieve and set up standard report headings.
+      *
+      *   Read
+      *     - read first primary file record.
+      *
+      *   Perform    Until End of File
+      *
+      *      Edit
+      *       - Check if the primary file record is required
+      *       - Softlock the record if it is to be updated
+      *
+      *      Update
+      *       - update database files
+      *       - write details to report while not primary file EOF
+      *       - look up referred to records for output details
+      *       - if new page, write headings
+      *       - write details
+      *
+      *      Read next primary file record
+      *
+      *    End Perform
+      *
+      *   Control totals:
+      *     01  -  Number of pages printed
+      *
+      *   Error Processing:
+      *     If a system error move the error code into the SYSR-STATUZ
+      *     If a database error move the XXXX-PARAMS to SYSR-PARAMS.
+      *     Perform the 600-FATAL-ERROR section.
+      *
+      *   These remarks must be replaced by what the program actually
+      *     does.
+      *
+      ***********************************************************************
+      *           AMENDMENT  HISTORY                                        *
+      ***********************************************************************
+      * DATE.... VSN/MOD  WORK UNIT    BY....                               *
+      *                                                                     *
+      * 27/06/16  01/01   TTH          Nu Bgoc Huynh  - Integral Thai       *
+      *           TRAN THU HANG                                             *
+      *                                                                     *
+      **DD/MM/YY*************************************************************
+      *
+       ENVIRONMENT DIVISION.
+       CONFIGURATION SECTION.
+       SOURCE-COMPUTER.                                IBM-AS400.
+       OBJECT-COMPUTER.                                IBM-AS400.
+      *
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT THAGPF        ASSIGN TO DATABASE-THAGPF.
+      /
+       DATA DIVISION.
+       FILE SECTION.
+       FD  THAGPF                      LABEL RECORDS STANDARD.
+       01  THAGPF-REC                  PIC X(284).
+      *      ------------>  Change to largest record format size
+
+       01  THAGPF-DATA.
+           COPY DDS-ALL-FORMATS           OF THAGPF.
+       WORKING-STORAGE SECTION.
+      *
+       01  WSAA-PROG                   PIC X(05) VALUE 'BHANG'.
+       01  WSAA-VERSION                PIC X(02) VALUE '01'.
+      *
+      *  These fields are required by MAINB processing and should not
+      *   be deleted.
+      *
+       01  WSAA-COMMIT-CNT             PIC S9(08) COMP-3.
+       01  WSAA-CYCLE-CNT              PIC S9(08) COMP-3.
+       01  WSAA-CNT                    PIC 9(02).
+       01  WSSP-EDTERROR               PIC X(04).
+      *
+       01  WSAA-QCMDEXC                PIC X(100).
+       01  WSAA-QCMDEXC-LENGTH         PIC S9(10)V9(05) COMP-3
+                                                    VALUE 100.
+       01  WSAA-THAG-FN.
+           03 FILLER                   PIC X(04) VALUE 'THAG'.
+           03 WSAA-RUNID               PIC X(02).
+           03 WSAA-JOBNO               PIC 9(04).
+       01 WSAA-THREAD.
+           03 FILLER                   PIC X(06) VALUE 'THREAD'.
+           03 WSAA-THREAD-NUMBER       PIC 9(03).
+           03 FILLER                   PIC X(01).
+      *
+       01  WSAA-STATUZ                 PIC X(04).
+      *
+      ****************************************************************
+      *
+      * The formats BUPA BSSC BPRD BSPR and BMSG are required by MAINB
+      *  processing and should not be deleted.
+      *
+       01  FORMATS.
+           03  BMSGREC                 PIC X(10) VALUE 'BMSGREC'.
+           03  BPRDREC                 PIC X(10) VALUE 'BPRDREC'.
+           03  BSPRREC                 PIC X(10) VALUE 'BSPRREC'.
+           03  BSSCREC                 PIC X(10) VALUE 'BSSCREC'.
+           03  BUPAREC                 PIC X(10) VALUE 'BUPAREC'.
+           03  DESCREC                 PIC X(10) VALUE 'DESCREC'.
+           03  LYBKREC                 PIC X(10) VALUE 'LYBKREC'.
+      *
+       01  TABLES.
+           03  T1692                   PIC X(06) VALUE 'T1692'.
+           03  T1693                   PIC X(06) VALUE 'T1693'.
+           03  T3629                   PIC X(06) VALUE 'T3629'.
+      *
+       01  CONTROL-TOTALS.
+           03  CT01                    PIC 9(02) VALUE 01.
+           03  CT02                    PIC 9(02) VALUE 02.
+      *
+       01  WSAA-OVERFLOW               PIC X(01) VALUE 'Y'.
+       88  NEW-PAGE-REQ                          VALUE 'Y'.
+      *
+       01  WSAA-EOF                    PIC X(01) VALUE 'N'.
+       88  END-OF-FILE                           VALUE 'Y'.
+      *
+       01  INDIC-AREA.
+           03  INDIC-TABLE  OCCURS 99  PIC 1 INDICATOR 1.
+               88  IND-OFF  VALUE B'0'.
+               88  IND-ON   VALUE B'1'.
+      *
+      *   Main, standard page headings
+      *
+      *01  RXXXX-H01.
+      *    COPY DD-RXXXXH01-O OF RXXXX.
+      *
+      *  Detail line - add as many detail and total lines as required.
+      *              - use redefines to save WS space where applicable.
+      *
+      *01  RXXXX-D01.
+      *    COPY DD-RXXXXD01-O OF RXXXX.
+      /
+           COPY BATCDORREC.
+      /
+           COPY BATCUPREC.
+      /
+           COPY BSSCSKM.
+      /
+           COPY BSPRSKM.
+      /
+           COPY BUPASKM.
+      /
+           COPY BPRDSKM.
+      /
+           COPY CONLOGREC.
+      /
+           COPY CONTOTREC.
+      /
+           COPY DATCON1REC.
+      /
+           COPY DESCSKM.
+      /
+           COPY SFTLOCKREC.
+      /
+           COPY SMTPFXCPY.
+      /
+           COPY SYSERRREC.
+      /
+           COPY VARCOM.
+      /
+           COPY LYBKSKM.
+      /
+           COPY PBIOKPAR.
+      *
+       LINKAGE SECTION.
+      *****************
+      *
+        01  LSAA-STATUZ                PIC X(04).
+        01  LSAA-BSSCREC               PIC X(1024).
+        01  LSAA-BSPRREC               PIC X(1024).
+        01  LSAA-BPRDREC               PIC X(1024).
+        01  LSAA-BUPAREC               PIC X(1024).
+      /
+       PROCEDURE DIVISION           USING LSAA-STATUZ
+                                          LSAA-BSSCREC
+                                          LSAA-BSPRREC
+                                          LSAA-BPRDREC
+                                          LSAA-BUPAREC.
+      *
+           COPY MAINB.
+      /
+       0900-RESTART SECTION.
+      **********************
+      *
+       0910-RESTART.
+      *
+      * Place any additional restart processing in here.
+      *
+           CONTINUE.
+
+       0990-EXIT.
+           EXIT.
+      /
+       1000-INITIALISE SECTION.
+      *************************
+      *
+       1010-INITIALISE.
+      * OVERIDE DATABASE FILE OF THAGPF IN CASE IT MIGHTLY CONTAINS
+      * DATA WE NEED OVERIDE
+           MOVE BUPA-PARMAREA            TO PBIOK-PARM-RECORD.
+           MOVE BPRD-SYSTEM-PARAM04      TO WSAA-RUNID.
+           MOVE BSSC-SCHEDULE-NUMBER     TO WSAA-JOBNO.
+           MOVE BSPR-PROCESS-OCC-NUM     TO WSAA-THREAD-NUMBER.
+           MOVE SPACES                   TO WSAA-QCMDEXC.
+
+           STRING
+              'OVRDBF FILE(THAGPF)    TOFILE('
+                                 DELIMITED BY SIZE
+              BPRD-RUN-LIBRARY       DELIMITED BY SPACES
+              '/' WSAA-THAG-FN
+              ') MBR(' WSAA-THREAD ') '
+              'SEQONLY(*YES 1000)'    DELIMITED BY SIZE
+                                      INTO WSAA-QCMDEXC
+           END-STRING.
+           CALL 'QCMDEXC' USING WSAA-QCMDEXC
+                                WSAA-QCMDEXC-LENGTH.
+
+      * Open required files.
+      *
+      *    OPEN OUTPUT PRINTER-FILE.
+           OPEN OUTPUT THAGPF.
+      *    MOVE BUPA-PARMAREA          TO PXXXX-PARM-RECORD.
+           MOVE O-K                    TO WSSP-EDTERROR.
+      *
+      * Move fields to primary file key.
+      *
+           INITIALIZE LYBK-PARAMS.
+           MOVE LYBKREC                TO LYBK-FORMAT.
+      *    MOVE BEGN                   TO LYBK-FUNCTION.
+           IF PBIOK-MANCODB            NOT = SPACES
+              MOVE READR               TO LYBK-FUNCTION
+           ELSE
+              MOVE BEGN                TO LYBK-FUNCTION
+           END-IF.
+      *
+      * - Remove this code if currencies are not applicable.
+      *
+      *
+       1090-EXIT.
+           EXIT.
+      /
+       2000-READ-FILE SECTION.
+      ************************
+      *
+       2010-READ-FILE.
+      *
+      *  Call the I/O module or do a Standard COBOL read on
+      *     the primary file.
+      *
+           IF WSAA-EOF                  = 'Y'
+              MOVE ENDP                TO WSSP-EDTERROR
+              GO TO 2090-EXIT
+           END-IF.
+      *       GO TO 2090-EXIT
+      *
+           IF PBIOK-MANCODB        NOT = SPACES
+              MOVE PBIOK-MANCODB       TO LYBK-MANCODK
+              MOVE READR               TO LYBK-FUNCTION
+              CALL 'LYBKIO'         USING LYBK-PARAMS
+              IF LYBK-STATUZ       NOT = O-K
+              AND LYBK-STATUZ      NOT = MRNF
+                  MOVE LYBK-STATUZ     TO SYSR-STATUZ
+                  MOVE LYBK-PARAMS     TO SYSR-PARAMS
+                  PERFORM 600-FATAL-ERROR
+              END-IF
+
+              IF PBIOK-MANCODB         =  MRNF
+                  MOVE 'Y'             TO WSAA-EOF
+                  MOVE ENDP            TO WSSP-EDTERROR
+              ELSE
+                  MOVE 'Y'             TO WSAA-EOF
+                  MOVE CT01            TO CONT-TOTNO
+                  MOVE 1               TO CONT-TOTVAL
+                  PERFORM 001-CALL-CONTOT
+              END-IF
+           ELSE
+              CALL 'LYBKIO'        USING LYBK-PARAMS
+              IF LYBK-STATUZ       NOT = O-K
+              AND LYBK-STATUZ      NOT = ENDP
+                  MOVE LYBK-STATUZ     TO SYSR-STATUZ
+                  MOVE LYBK-PARAMS     TO SYSR-PARAMS
+                  PERFORM 600-FATAL-ERROR
+               END-IF
+           IF LYBK-STATUZ              =  ENDP
+                  MOVE 'Y'             TO WSAA-EOF
+                  MOVE ENDP            TO WSSP-EDTERROR
+               ELSE
+                  MOVE NEXTR           TO LYBK-FUNCTION
+                  MOVE CT01            TO CONT-TOTNO
+                  MOVE 1               TO CONT-TOTVAL
+                  PERFORM 001-CALL-CONTOT
+               END-IF
+           END-IF.
+       2090-EXIT.
+           EXIT.
+      /
+       2500-EDIT SECTION.
+      *******************
+      *
+       2510-EDIT.
+      *
+      *  Check record is required for processing.
+      *  Softlock the record if it is to be updated.
+      *
+           MOVE O-K                    TO WSSP-EDTERROR.
+      *
+       2590-EXIT.
+           EXIT.
+      /
+       3000-UPDATE SECTION.
+      *********************
+      *
+       3010-UPDATE.
+      *
+      * Update database records.
+      *MOVE ALL INFORMATION FROM LYBKPF TO THAGPF
+           INITIALIZE           THAGPF-DATA.
+           MOVE LYBK-MANCODK    TO MANCODB     OF THAGPF-DATA.
+           MOVE LYBK-CURBORK    TO CURBORRZ    OF THAGPF-DATA.
+           MOVE LYBK-DECODK     TO DECODEZ     OF THAGPF-DATA.
+           MOVE LYBK-LLDATK     TO LLDATEZ     OF THAGPF-DATA.
+           MOVE LYBK-WTLISK01   TO WTLISTZ01   OF THAGPF-DATA.
+           MOVE LYBK-WTLISK02   TO WTLISTZ02   OF THAGPF-DATA.
+           MOVE LYBK-WTLISK03   TO WTLISTZ03   OF THAGPF-DATA.
+           MOVE LYBK-PRVBORK01  TO PRVBORRZ01  OF THAGPF-DATA.
+           MOVE LYBK-PRVBORK02  TO PRVBORRZ02  OF THAGPF-DATA.
+           MOVE LYBK-PRVBORK03  TO PRVBORRZ03  OF THAGPF-DATA.
+           MOVE LYBK-PRVBORK04  TO PRVBORRZ04  OF THAGPF-DATA.
+           MOVE LYBK-PRVBORK05  TO PRVBORRZ05  OF THAGPF-DATA.
+      *
+           WRITE THAGPF-REC FROM THAGPF-DATA.
+      *
+      * UPDATE CONTOT2
+           MOVE CT02            TO CONT-TOTNO.
+           MOVE 1               TO CONT-TOTVAL.
+           PERFORM 001-CALL-CONTOT.
+
+      *
+      *
+       3090-EXIT.
+           EXIT.
+      /
+       3500-COMMIT SECTION.
+      *********************
+      *
+       3510-COMMIT.
+      *
+      * Place any additional commitment processing in here.
+      *
+           CONTINUE.
+
+       3590-EXIT.
+           EXIT.
+      /
+       3600-ROLLBACK SECTION.
+      ***********************
+      *
+       3610-ROLLBACK.
+      *
+      * Place any additional rollback processing in here.
+      *
+           CONTINUE.
+
+       3690-EXIT.
+           EXIT.
+      /
+       4000-CLOSE SECTION.
+      ********************
+      *
+       4010-CLOSE-FILES.
+      *
+      *  Close any open files.
+      *
+           CLOSE THAGPF.
+           MOVE O-K                    TO LSAA-STATUZ.
+      *
+       4090-EXIT.
+           EXIT.
+

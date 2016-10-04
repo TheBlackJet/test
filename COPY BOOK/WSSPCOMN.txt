@@ -1,0 +1,142 @@
+      *****************************************************************
+      *                    Amendment History                          *
+      *****************************************************************
+      * Date.....   By..   Amendment...............              Number
+      * 03/04/88    J.H.   NEW FIELDS FOR UPDATED MAINF             001
+      *
+      * 01/06/88    H.S.   SDF1571, SDF1354 Added fields WSSP-      001
+      *                    CLTIIFLG, WSSP-MCCYFLG, & WSSP-LEDGCCY   001
+      *                    in previously allocated filler area.     001
+      *
+      * 24/02/94    SCL.   Remove WSSP-PASSWORD and change          002
+      *                           WSSP-ABBRNAME to WSSP-USERID.
+      *
+      ***********************************************************************
+      *                                                                     *
+      * ......... New Version of the Amendment History.                     *
+      *                                                                     *
+      ***********************************************************************
+      *           AMENDMENT  HISTORY                                        *
+      ***********************************************************************
+      * DATE.... VSN/MOD  WORK UNIT    BY....                               *
+      *                                                                     *
+      * 14/02/97  01/01   D97CEN       John Evans                           *
+      *           Year 2000 field expansion                                 *
+      *                                                                     *
+      **DD/MM/YY*************************************************************
+       01  WSSP-COMMON-AREA.
+           03  WSSP-TERM                PIC X(04).
+           03  WSSP-TRANID              PIC X(22).
+           03  WSSP-COMPANY             PIC X(01).
+           03  WSSP-BRANCH              PIC X(02).
+      **** 03  WSSP-BATCHKEY            PIC X(20).                      <D97CEN>
+           03  WSSP-BATCHKEY            PIC X(22).                      <D97CEN>
+           03  WSSP-SYSTMENU            PIC X(05).
+           03  WSSP-MASTMENU            PIC X(05).
+           03  WSSP-SUBMENU             PIC X(05).
+           03  WSSP-NEXT1PROG           PIC X(05).
+           03  WSSP-NEXT2PROG           PIC X(05).
+           03  WSSP-NEXT3PROG           PIC X(05).
+           03  WSSP-NEXT4PROG           PIC X(05).
+           03  WSSP-ERRORPROG           PIC X(05).
+           03  WSSP-NEXTPROG            PIC X(05).
+           03  WSSP-LASTPROG            PIC X(05).
+      *    03  WSSP-PASSWORD            PIC X(08).                      <002>
+           03  FILLER                   PIC X(08).                      <002>
+           03  WSSP-USERNAME            PIC X(24).
+           03  WSSP-VERSION             PIC X(02).
+           03  WSSP-LOGO                PIC X(16).
+           03  WSSP-LANGUAGE            PIC X(01).
+           03  WSSP-ETNAME              PIC X(04).
+           03  WSSP-FLAG                PIC X(01).
+           03  WSSP-BCHACTION           PIC X(01).
+           03  WSSP-SBMACTION           PIC X(01).
+           03  WSSP-EDTERROR            PIC X(04).
+           03  WSSP-MSGAREA             PIC X(70).
+           03  WSSP-SECTIONNO           PIC X(04).
+           03  WSSP-MMACTION            PIC X(01).
+           03  WSSP-FSUCO               PIC X(01).
+           03  WSSP-SYSACTION           PIC X(01).
+           03  WSSP-ACCTMONTH           PIC S9(02) COMP-3.
+      **** 03  WSSP-ACCTYEAR            PIC S9(02) COMP-3.              <D97CEN>
+           03  WSSP-ACCTYEAR            PIC S9(04) COMP-3.              <D97CEN>
+      **** 03  WSSP-BATCKEY             PIC X(20).                      <D97CEN>
+           03  WSSP-BATCKEY             PIC X(22).                      <D97CEN>
+           03  WSSP-INQKEY              PIC X(36).
+           03  WSSP-SCROLLKEY           PIC X(64).
+           03  WSSP-BANKCODE            PIC X(02).
+           03  WSSP-PROGRAM-PTR         PIC S9(03) COMP-3.              <001>
+           03  WSSP-ENDTYPE             PIC X(01).
+           03  WSSP-CHDR-CNTTYPE       PIC X(03).
+           03  WSSP-CHDR-TYPEDESC      PIC X(30).
+           03  WSSP-CHDR-OWNERNAME     PIC X(47).
+           03  WSSP-LONGCONFNAME REDEFINES
+               WSSP-CHDR-OWNERNAME     PIC X(47).
+           03  WSSP-UND-ACTION         PIC X(02).
+           03  WSSP-UND-FUNCTION       PIC X(02).
+           03  WSSP-BILLCURR           PIC X(03).
+           03  WSSP-CURRFROM           PIC S9(08) COMP-3.
+           03  WSSP-CURRTO             PIC S9(08) COMP-3.
+           03  WSSP-TRANNO              PIC 9(05).
+           03  WSSP-ENVIRONS.
+               05  WSSP-ENVIRON01       PIC X(01).
+                   88  WSSP-FSU         VALUE 'Y'.
+               05  WSSP-ENVIRON02       PIC X(01).
+                   88  WSSP-POL         VALUE 'Y'.
+               05  WSSP-ENVIRON03       PIC X(01).
+                   88  WSSP-LIF         VALUE 'Y'.
+               05  WSSP-ENVIRON04       PIC X(01).
+                   88  WSSP-UNL         VALUE 'Y'.
+               05  WSSP-ENVIRON05       PIC X(01).
+                   88  WSSP-SUP         VALUE 'Y'.
+               05  WSSP-ENVIRON06       PIC X(01).
+               05  WSSP-ENVIRON07       PIC X(01).
+               05  WSSP-ENVIRON08       PIC X(01).
+               05  WSSP-ENVIRON09       PIC X(01).
+               05  WSSP-ENVIRON10       PIC X(01).
+           03  WSSP-RTSWITCHES.
+               05  WSSP-RTSWITCH01      PIC X(01).
+               05  WSSP-RTSWITCH02      PIC X(01).
+               05  WSSP-RTSWITCH03      PIC X(01).
+               05  WSSP-RTSWITCH04      PIC X(01).
+               05  WSSP-RTSWITCH05      PIC X(01).
+               05  WSSP-RTSWITCH06      PIC X(01).
+               05  WSSP-RTSWITCH07      PIC X(01).
+               05  WSSP-RTSWITCH08      PIC X(01).
+           03  WSSP-MENUCODE            PIC X(01).
+           03  WSSP-CLNTKEY             PIC X(12).
+      *    03  WSSP-ABBRNAME            PIC X(10).                      <002>
+           03  WSSP-USERID              PIC X(10).                      <002>
+           03  WSSP-CLONEKEY            PIC X(12).
+           03  WSSP-CONFIRMATION-KEY    PIC X(20).                      <001>
+           03  FILLER                   PIC X(01).                      <001>
+           03  WSSP-CLTIIFLG            PIC X(01).                      <001>
+           03  WSSP-MCCYFLG             PIC X(01).                      <001>
+           03  WSSP-LEDGCCY             PIC X(03).                      <001>
+           03  WSSP-TRANRATE            PIC S9(06)V9(04).
+           03  WSSP-TRANCURR            PIC X(03).
+           03  WSSP-LEDGCURR            PIC X(03).
+           03  WSSP-CANPROG             PIC X(08).
+           03  WSSP-PROFILE             PIC X(06).
+      **** 03  WSSP-BATCHKEY2           PIC X(20).                      <D97CEN>
+           03  WSSP-BATCHKEY2           PIC X(22).                      <D97CEN>
+           03  WSSP-SEC-SWITCHING.
+               05  WSSP-SEC-ACTNS.
+                   07  WSSP-SEC-ACTN    PIC X(01) OCCURS 22.
+               05  WSSP-SEC-PROGS.
+                   07  WSSP-SEC-PROG    PIC X(05) OCCURS 22.
+           03  WSSP-ACTN-STACK.
+               05  WSSP-ACTN-SCRN       PIC X(01) OCCURS 10.
+           03  WSSP-STCK-PTR            PIC S9(03) COMP-3.
+           03  WSSP-LAST-ACTN           PIC X(01).
+           03  WSSP-CHDRKEY.
+               05  WSSP-CHDR-CHDRPFX   PIC X(02).
+               05  WSSP-CHDR-CHDRCOY   PIC X(01).
+               05  WSSP-CHDR-CHDRNUM   PIC X(08).
+               05  WSSP-CHDR-VALIDFLAG PIC X(01).
+           03  WSSP-CHDR-CLNTKEY.
+               05  WSSP-CHDR-CLNTPFX   PIC X(02).
+               05  WSSP-CHDR-CLNTCOY   PIC X(01).
+               05  WSSP-CHDR-COWNNUM   PIC X(08).
+           03  WSSP-SERVUNIT            PIC X(02).
+

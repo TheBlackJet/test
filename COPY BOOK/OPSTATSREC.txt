@@ -1,0 +1,13 @@
+       01  OPSTATS-REC.
+           03  OPSREC-SUBRNAME         PIC X(08).
+           03  OPSREC-TRANID           PIC X(22).
+           03  OPSREC-LANGUAGE         PIC X(01).
+           03  OPSREC-SCRNAME          PIC X(05).
+           03  OPSREC-TIM1000          PIC 9(08).
+           03  OPSREC-TIM2000          PIC 9(08).
+           03  OPSREC-TIM3000          PIC 9(08).
+           03  OPSREC-TIM4000          PIC 9(08).
+           03  OPSREC-TIME-OUT         PIC 9(05)V99.
+           03  OPSREC-THINK-TIME       PIC 9(05)V99.
+           03  OPSREC-STATUZ           PIC X(04).
+

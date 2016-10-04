@@ -1,0 +1,63 @@
+      *
+      *(c) Copyright CSC Corporation Limited 1986....2004.
+      *    All rights reserved.  CSC Confidential.
+      *
+       01  BPRD-PARAMS.
+         03  BPRD-FUNCTION             PIC X(0005).
+         03  BPRD-STATUZ               PIC X(0004).
+         03  BPRD-LEVEL-ID.
+           05  BPRD-GEN-DATE           PIC 9(0008).
+           05  BPRD-GEN-TIME           PIC 9(0006).
+           05  BPRD-VN                 PIC X(0001).
+         03  BPRD-DATA-LOCATION        PIC X(0001).
+         03  BPRDIO                    PIC X(0010).
+         03  BPRD-RRN                  PIC 9(09) COMP-4.
+         03  BPRD-FORMAT               PIC X(0010).
+      *
+         03  BPRD-DATA-AREA.
+           05  BPRD-DATA-KEY                   PIC X(0256).
+           05  BPRDREC-KEY-DATA REDEFINES BPRD-DATA-KEY.
+            07  BPRD-COMPANY                   PIC X(0001).
+            07  BPRD-PROCESS-NAME              PIC X(0010).
+            07  FILLER                         PIC X(0245).
+      *
+           05  BPRD-NON-KEY                    PIC X(0425).
+           05  BPRDREC-NON-KEY-DATA REDEFINES BPRD-NON-KEY.
+            07  FILLER                         PIC X(0001).
+            07  FILLER                         PIC X(0010).
+            07  BPRD-EARLIEST-START            PIC S9(06).
+            07  BPRD-LATEST-START              PIC S9(06).
+            07  BPRD-BATCH-PROGRAM             PIC X(0010).
+            07  BPRD-COMMAND-STRING            PIC X(0240).
+            07  BPRD-THREADS-THIS-PROCESS      PIC S9(03) COMP-3.
+            07  BPRD-THREADS-SUBSQNT-PROC      PIC S9(03) COMP-3.
+            07  BPRD-PARM-PROMPT-PROG          PIC X(0005).
+            07  BPRD-RRULE                     PIC X(0008).
+            07  BPRD-AUTH-CODE                 PIC X(0004).
+            07  BPRD-BCHCLSFLG                 PIC X(0001).
+            07  BPRD-DEFAULT-BRANCH            PIC X(0002).
+            07  BPRD-SCHEDULING-PRIORITY       PIC S9(03) COMP-3.
+            07  BPRD-SYSTEM-JOB-PRIORITY       PIC S9(02) COMP-3.
+            07  BPRD-SYS-JOB-TIMESLICE         PIC S9(06) COMP-3.
+            07  BPRD-BPSYSPARS.
+             09  BPRD-BPSYSPAR                 PIC X(0010)
+                                                OCCURS 005 TIMES.
+            07  FILLER REDEFINES BPRD-BPSYSPARS.
+             09  BPRD-SYSTEM-PARAM01           PIC X(0010).
+             09  BPRD-SYSTEM-PARAM02           PIC X(0010).
+             09  BPRD-SYSTEM-PARAM03           PIC X(0010).
+             09  BPRD-SYSTEM-PARAM04           PIC X(0010).
+             09  BPRD-SYSTEM-PARAM05           PIC X(0010).
+            07  BPRD-CYCLES-PER-COMMIT         PIC S9(08) COMP-3.
+            07  BPRD-RUN-LIBRARY               PIC X(0010).
+            07  BPRD-RESTART-METHOD            PIC X(0001).
+            07  BPRD-CRITICAL-PROCESS          PIC X(0001).
+            07  BPRD-MAX-CYCLE-TIME            PIC S9(06) COMP-3.
+            07  BPRD-MULTI-BRANCH-PROCESS      PIC X(0001).
+            07  BPRD-MULTI-BRANCH-TYPE         PIC X(0001).
+            07  BPRD-PRODCODE                  PIC X(0001).
+            07  BPRD-USER-PROFILE              PIC X(0010).
+            07  BPRD-JOB-NAME                  PIC X(0010).
+            07  BPRD-DATIME                    PIC X(0026).
+      *
+

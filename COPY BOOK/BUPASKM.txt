@@ -1,0 +1,40 @@
+      *
+      *(c) Copyright Continuum Corporation Ltd.  1986....1995.
+      *    All rights reserved.  Continuum Confidential.
+      *
+       01  BUPA-PARAMS.
+         03  BUPA-FUNCTION             PIC X(0005).
+         03  BUPA-STATUZ               PIC X(0004).
+         03  BUPA-LEVEL-ID.
+           05  BUPA-GEN-DATE           PIC 9(0008).
+           05  BUPA-GEN-TIME           PIC 9(0006).
+           05  BUPA-VN                 PIC X(0002).
+         03  BUPAIO                    PIC X(0010).
+         03  BUPA-RRN                  PIC 9(09) COMP-4.
+         03  BUPA-FORMAT               PIC X(0010).
+      *
+         03  BUPA-DATA-AREA.
+           05  BUPA-DATA-KEY                   PIC X(0064).
+           05  BUPAREC-KEY-DATA REDEFINES BUPA-DATA-KEY.
+            07  BUPA-SCHEDULE-NAME             PIC X(0010).
+            07  BUPA-SCHEDULE-NUMBER           PIC S9(08) COMP-3.
+            07  BUPA-COMPANY                   PIC X(0001).
+            07  BUPA-PARM-PROMPT-PROG          PIC X(0005).
+            07  FILLER                         PIC X(0043).
+      *
+           05  BUPA-NON-KEY                    PIC X(0942).
+           05  BUPAREC-NON-KEY-DATA REDEFINES BUPA-NON-KEY.
+            07  FILLER                         PIC X(0010).
+            07  FILLER                         PIC X(0005).
+            07  FILLER                         PIC X(0001).
+            07  FILLER                         PIC X(0005).
+            07  BUPA-ACCT-YEAR                 PIC S9(04) COMP-3.
+            07  BUPA-ACCT-MONTH                PIC S9(02) COMP-3.
+            07  BUPA-EFFECTIVE-DATE            PIC S9(08).
+            07  BUPA-BRANCH                    PIC X(0002).
+            07  BUPA-PARMAREA                  PIC X(0860).
+            07  BUPA-USER-PROFILE              PIC X(0010).
+            07  BUPA-JOB-NAME                  PIC X(0010).
+            07  BUPA-DATIME                    PIC X(0026).
+      *
+

@@ -1,0 +1,195 @@
+      ************************************************************
+      *    MAING ....  INTERACTIVE PROGRAM MAINLINE              *
+      ************************************************************
+      *    MAING will provide the driving code to standardise the*
+      *    processing of the program. Unlike it's cousin MAINF,  *
+      *    we will call the sections based upon the section      *
+      *    number being passed. This means that we can call any  *
+      *    section in any order.                                 *
+      ************************************************************      <001>
+      *              AMENDMENT  HISTORY                          *      <001>
+      ************************************************************      <001>
+      * DATE.....   BY..   AMENDMENT...............              NUMBER <001>
+      *                                                                 <001>
+      * 23/06/94    DUNC   Revision of MAINF copybook to provide
+      *                    client/server capability within our
+      *                    program calls.
+      * DD/MM/YY    X.X.   xxxxxxxxxxxxxxxxxxxxxxxx               NNN   <001>
+      *
+       000-MAIN SECTION.
+      ******************
+      *
+       001-MAINLINE.
+      *
+           MOVE WSAA-PROG              TO SYSR-SUBRNAME.
+           MOVE O-K                    TO SYSR-STATUZ.
+           MOVE WSSP-TRANID            TO VRCM-TRANID.
+      *
+       002-CALL.
+      *---------------------------------------------------------------*
+      *    Check for error messages.                                  *
+      *---------------------------------------------------------------*
+           EVALUATE WSSP-SECTIONNO
++----         WHEN 1000                PERFORM 010-INITIALISE
+|             WHEN 'PRE '              PERFORM PRE-SCREEN-EDIT
+|+---         WHEN 2000                PERFORM 020-SCREEN
+||+--         WHEN 3000                PERFORM 030-UPDATE
+|||+-         WHEN 4000                PERFORM 040-WHERE-NEXT
+||||          WHEN OTHER
+||||             DISPLAY 'SECTION NUMBER MISSING IN MAING.'
+||||             MOVE 'BOMB'           TO SYSR-STATUZ
+||||       END-EVALUATE.
+||||  *
+||||   009-EXIT.
+||||       EXIT PROGRAM.
+||||  *
+||||  *===============================================================*
+||||  *                                                               *
+||||  *    Call the Initialisation process for the screen call and    *
+||||  *    for the initial data retrieval.                            *
+||||  *                                                               *
+||||  *===============================================================*
++--->  010-INITIALISE SECTION.
+ |||  *
+ |||   011-INITIALISE-MAING.
+ |||  *---------------------------------------------------------------*
+ |||  *    Initialse the screen fields.                               *
+ |||  *---------------------------------------------------------------*
+ |||       ACCEPT OPSREC-TIM1000       FROM TIME.
+ |||       MOVE WSAA-PROG              TO OPSREC-SUBRNAME.
+ |||       MOVE WSAA-VERSION           TO SCRN-VERSION.
+ |||       MOVE WSAA-VERSION           TO WSSP-VERSION.
+ |||  *    MOVE O-K                    TO WSSP-EDTERROR.
+ |||       MOVE SPACES                 TO WSSP-EDTERROR.
+ |||  *
+ |||   012-CALL-SECTION.
+ |||  *
+ |||       PERFORM 1000-INITIALISE.                                     <001>
+ |||                                                                    <001>
+ |||  *
+ |||   019-EXIT.
+ |||       EXIT.
+ |||  *
+ |||  *===============================================================*
+ |||  *                                                               *
+ |||  *    Call the Screen processing to return or display the data.  *
+ |||  *                                                               *
+ |||  *===============================================================*
+ |||  *
+ +-->  020-SCREEN SECTION.
+  ||  ********************
+  ||   021-DISPLAY-SCREEN.
+  ||  *
+  ||       ACCEPT OPSREC-TIM2000       FROM TIME.
+  ||       MOVE O-K                    TO WSSP-EDTERROR.
+  ||  *
+  ||   022-CALL-SECTION.
+  ||  *
+  ||       PERFORM 2000-SCREEN-EDIT.
+  ||  *
+  ||   029-EXIT.
+  ||       EXIT.
+  ||  /
+  ||  *===============================================================*
+  ||  *                                                               *
+  ||  *    Update the database with the information passed.           *
+  ||  *                                                               *
+  ||  *===============================================================*
+  ||  *
+  +->  030-UPDATE SECTION.
+   |  ********************
+   |  *
+   |   031-UPDATE.
+   |  *
+   |       ACCEPT OPSREC-TIM2000       FROM TIME.
+   |       MOVE O-K                    TO WSSP-EDTERROR.
+   |  *
+   |   032-CALL-SECTION.
+   |  *
+   |       PERFORM 3000-UPDATE.
+   |  *
+   |   039-EXIT.
+   |       EXIT.
+   |  *
+   |  *===============================================================*
+   |  *                                                               *
+   |  *    Determine where the process should go next.                *
+   |  *                                                               *
+   |  *===============================================================*
+   |  *
+   +>  040-WHERE-NEXT SECTION.
+      ************************
+      *
+       041-UPDATE.
+      *
+           ACCEPT OPSREC-TIM2000       FROM TIME.
+           MOVE O-K                    TO WSSP-EDTERROR.
+      *
+       042-CALL-SECTION.
+      *
+           PERFORM 4000-WHERE-NEXT.
+      *
+       049-EXIT.
+           EXIT.
+      /
+      *===============================================================*
+      *                                                               *
+      *    SECTIONS PERFORMED ON AN ADHOC BASIS.                      *
+      *                                                               *
+      *===============================================================*
+      *
+      *****************************************************************
+      *    Report a Fatal error condition                             *
+      *****************************************************************
+      *
+       600-FATAL-ERROR SECTION.
+      *************************
+      *
+       610-FATAL-ERROR.
+      *
+           IF SYSR-STATUZ              = BOMB
+               GO TO 620-ERROR-PROG
+           END-IF.
+
+           MOVE SYSR-STATUZ            TO SYSR-SYSERR-STATUZ.
+
+           IF SYSR-SYSERR-TYPE         NOT = '2'
+               MOVE '1'                TO SYSR-SYSERR-TYPE
+           END-IF.
+
+           CALL 'SYSERR' USING SYSR-SYSERR-REC.
+      *
+       620-ERROR-PROG.
+      *
+           MOVE BOMB                   TO WSSP-EDTERROR.                <001>
+           MOVE SPACE                  TO VRCM-INIT.                    <001>
+           MOVE WSAA-PROG              TO WSSP-LASTPROG.                <001>
+           MOVE BOMB                   TO WSSP-NEXTPROG.                <001>
+      *
+       690-EXIT.
+           EXIT PROGRAM.                                                <001>
+      *                                                                 <001>
+      ***************************************************************** <001>
+      *      Command KEY request to exit program                        <001>
+      ***************************************************************** <001>
+      *                                                                 <001>
+       900-EXIT-PROGRAM SECTION.                                        <001>
+      **************************                                        <001>
+       910-MOVES.                                                       <001>
+      *                                                                 <001>
+           MOVE WSAA-PROG              TO WSSP-LASTPROG.                <001>
+           MOVE SPACE                  TO VRCM-INIT.                    <001>
+           MOVE SCRN-STATUZ            TO WSSP-NEXTPROG.                <001>
+
+           IF SCRN-STATUZ              = BOMB
+              MOVE SCRN-STATUZ         TO WSSP-EDTERROR
+           ELSE
+              MOVE SPACES              TO WSSP-EDTERROR
+           END-IF.                                                      <001>
+      *                                                                 <001>
+       990-EXIT.                                                        <001>
+           EXIT PROGRAM.                                                <001>
+      ***************************************************************** <001>
+      *    END OF MAING ....                                            <001>
+      ***************************************************************** <001>
+

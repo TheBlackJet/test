@@ -1,0 +1,11 @@
+       01  STTH0-DATA-AREA.
+           02  STTH0-DATA-FIELDS.
+             03  STTH0-ACTION                   PIC X(00001)    .
+             03  STTH0-CHDRNUM                  PIC X(00008)    .
+           02  STTH0-ERROR-INDICATORS.
+             03  STTH0-ACTION-ERR       PIC X(4).
+             03  STTH0-CHDRNUM-ERR      PIC X(4).
+           02  STTH0-OUTPUT-INDICATORS.
+             03  STTH0-ACTION-OUT       PIC X OCCURS 12.
+             03  STTH0-CHDRNUM-OUT      PIC X OCCURS 12.
+

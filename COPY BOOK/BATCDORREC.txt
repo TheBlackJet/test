@@ -1,0 +1,31 @@
+      ***********************************************************************
+      *                                                                     *
+      * ......... New Version of the Amendment History.                     *
+      *                                                                     *
+      ***********************************************************************
+      *           AMENDMENT  HISTORY                                        *
+      ***********************************************************************
+      * DATE.... VSN/MOD  WORK UNIT    BY....                               *
+      *                                                                     *
+      * 31/01/97  01/01   D97CEN       Ulrika Nyberg                        *
+      *           Year 2000 field expansion.                                *
+      *                                                                     *
+      **DD/MM/YY*************************************************************
+       01  BATD-BATCDOR-REC.
+           03  BATD-FUNCTION           PIC X(05).
+           03  BATD-TRANID             PIC X(22).
+           03  BATD-BATCHKEY.
+               05  BATD-CONTKEY.
+                   07  BATD-PREFIX     PIC X(02).
+                   07  BATD-COMPANY    PIC X(01).
+                   07  BATD-BRANCH     PIC X(02).
+      ****         07  BATD-ACTYEAR    PIC S9(02) COMP-3.               <D97CEN>
+                   07  BATD-ACTYEAR    PIC S9(04) COMP-3.               <D97CEN>
+                   07  BATD-ACTMONTH   PIC S9(02) COMP-3.
+                   07  BATD-TRCDE      PIC X(04).
+               05  BATD-BATCH          PIC X(05).
+               05  FILLER              PIC X(02).
+           03  BATD-TRANCURR           PIC X(03).
+           03  FILLER                  PIC X(29).
+           03  BATD-STATUZ             PIC X(04).
+

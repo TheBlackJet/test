@@ -1,0 +1,12 @@
+       01  SFTL-SFTLOCK-REC.
+           03  SFTL-FUNCTION           PIC X(04).
+           03  SFTL-COMPANY            PIC X(01).
+           03  SFTL-ENTTYP             PIC X(02).
+           03  SFTL-ENTITY             PIC X(16).
+           03  SFTL-TRANSACTION        PIC X(04).
+           03  SFTL-USER               PIC 9(06) COMP-3.
+           03  SFTL-STATUZ             PIC X(04).
+           03  SFTL-EXTRA-DATA.
+               05  SFTL-DATE           PIC 9(06) COMP-3.
+               05  SFTL-TIME           PIC 9(06) COMP-3.
+

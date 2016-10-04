@@ -1,0 +1,61 @@
+      *
+      *****************************************************************
+      *                 AMENDMENT HISTORY
+      *****************************************************************
+      * DATE.....  BY..  AMENDEMENT..............................NUMBER
+      *
+      * DD/MM/YY   X.X.  xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx NNN
+      * 28/10/94   JAM.  9503 Client/Server Development           001
+      *                  New field, SCRN-SUBFILE-END added. This
+      *                  is used to indicate to the screen control
+      *                  program whether we have any active records
+      *                  in the subfile.
+      * 28/11/94   JAM.  New field, SCRN-SUBFILE-ERRORS added. The 002
+      *                  error codes are passed back to the screen
+      *                  control program where they are processed.
+      *                  New field, SCRN-ERROR-RRN added. This is
+      *                  the RRN of the first subfile error.
+      * 09/03/95   DUNC  Add a field to determine the mode in      003
+      *                  which the screen is being called, i.e. Local
+      *                  or Remote.
+      *****************************************************************
+      *
+      ***********************************************************************
+      *                                                                     *
+      * ......... New Version of the Amendment History.                     *
+      *                                                                     *
+      ***********************************************************************
+      *           AMENDMENT  HISTORY                                        *
+      ***********************************************************************
+      * DATE.... VSN/MOD  WORK UNIT    BY....                               *
+      *                                                                     *
+      * 13/05/96  01/01   D9607C       James "Sham" O Sullivan              *
+      *           Extend SUBFILE-RRN to PIC 9(5) to allow for maximum       *
+      *           subfile size.                                             *
+      *                                                                     *
+      **DD/MM/YY*************************************************************
+       01  SCRN-SCREEN-PARAMS.
+           03  SCRN-FUNCTION           PIC X(05).
+           03  SCRN-SUBFILE-RRN        PIC 9(05).
+           03  SCRN-SUBFILE-MORE       PIC X(01).
+           03  SCRN-VERSION            PIC X(02).
+           03  SCRN-LOGO               PIC X(16).
+           03  SCRN-COMPANY            PIC X(01).
+           03  SCRN-FSU-COMPANY        PIC X(01).
+           03  SCRN-LANGUAGE           PIC X(01).
+           03  SCRN-ERRORLINE          PIC X(78).
+           03  SCRN-ERROR-CODE         PIC X(04).
+           03  SCRN-SCRNAME            PIC X(05).
+           03  SCRN-ACTION             PIC X(01).
+           03  SCRN-POSITION-CURSOR    PIC X(10).
+           03  SCRN-ROW                PIC 9(03).
+           03  SCRN-COLUMN             PIC 9(03).
+           03  SCRN-STATUZ             PIC X(04).
+           03  SCRN-TIME-OUT           PIC 9(05)V99.
+           03  SCRN-THINK-TIME         PIC 9(05)V99.
+           03  SCRN-SUBFILE-END        PIC 9(05) COMP-3.                 <001>
+           03  SCRN-SUBFILE-ERRORS.
+               05   SCRN-SUBFILE-ERRNO PIC X(04) OCCURS 3.
+           03  SCRN-ERROR-RRN          PIC 9(03).
+           03  SCRN-DEVICE-IND         PIC X(04).
+

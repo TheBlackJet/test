@@ -1,0 +1,46 @@
+      *
+      * Copyright 1986-2014, Computer Sciences Corporation.
+      *
+      *
+       01  LYBK-PARAMS.
+         03  LYBK-FUNCTION             PIC X(00005).
+         03  LYBK-STATUZ               PIC X(00004).
+         03  LYBK-LEVEL-ID.
+           05  LYBK-GEN-DATE           PIC 9(00008).
+           05  LYBK-GEN-TIME           PIC 9(00006).
+           05  LYBK-VN                 PIC X(00001).
+         03  LYBK-DATA-LOCATION        PIC X(00001).
+         03  LYBKIO                    PIC X(00010).
+         03  LYBK-RRN                  PIC 9(09) COMP-4.
+         03  LYBK-FORMAT               PIC X(00010).
+      *
+         03  LYBK-DATA-AREA.
+           05  LYBK-DATA-KEY                   PIC X(00256).
+           05  LYBKREC-KEY-DATA REDEFINES LYBK-DATA-KEY.
+            07  LYBK-MANCODK                   PIC X(00007).
+            07  FILLER                         PIC X(00249).
+      *
+           05  LYBK-NON-KEY                    PIC X(00284).
+           05  LYBKREC-NON-KEY-DATA REDEFINES LYBK-NON-KEY.
+            07  FILLER                         PIC X(00007).
+            07  LYBK-CURBORK                   PIC X(00030).
+            07  LYBK-DECODK                    PIC X(00002).
+            07  LYBK-LLDATK                    PIC S9(08) COMP-3.
+            07  LYBK-WTLISKS.
+             09  LYBK-WTLISK                   PIC X(00030)
+                                                OCCURS 003 TIMES.
+            07  FILLER REDEFINES LYBK-WTLISKS.
+             09  LYBK-WTLISK01                 PIC X(00030).
+             09  LYBK-WTLISK02                 PIC X(00030).
+             09  LYBK-WTLISK03                 PIC X(00030).
+            07  LYBK-PRVBORKS.
+             09  LYBK-PRVBORK                  PIC X(00030)
+                                                OCCURS 005 TIMES.
+            07  FILLER REDEFINES LYBK-PRVBORKS.
+             09  LYBK-PRVBORK01                PIC X(00030).
+             09  LYBK-PRVBORK02                PIC X(00030).
+             09  LYBK-PRVBORK03                PIC X(00030).
+             09  LYBK-PRVBORK04                PIC X(00030).
+             09  LYBK-PRVBORK05                PIC X(00030).
+      *
+
